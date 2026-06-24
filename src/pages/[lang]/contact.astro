@@ -1,7 +1,10 @@
 ---
 import Layout from "@layouts/default.astro";
 import Headline from "@components/headline.astro";
-import { useTranslations } from "@utils/i18n";
+import ContactForm from "@components/contact-form.astro";
+import ContactMap from "@components/contact-map.astro";
+import { Icon } from "astro-icon/components";
+import { useTranslations, getLocaleUrl } from "@utils/i18n";
 import { themeConfig } from '~/theme.config';
 
 export function getStaticPaths() {
@@ -18,5 +21,40 @@ const t = useTranslations(locale);
 
 <Layout title={t('pages.contact.title')} description={t('pages.contact.description')} {locale}>
   <Headline text={t('pages.contact.title')} class="pb-10" />
-  xxx
+
+  <!-- Intro (full width, on top) -->
+  <div class="mb-12 flex max-w-2xl flex-col gap-2">
+    <h2 class="text-xl font-bold">{t('pages.contact.intro-heading')}</h2>
+    <p class="text-stone-600 dark:text-stone-300">{t('pages.contact.intro-text')}</p>
+  </div>
+
+  <div class="flex flex-col gap-12 lg:flex-row lg:gap-16">
+    <!-- Contact form -->
+    <div class="lg:flex-1">
+      <ContactForm {locale} />
+    </div>
+
+    <!-- Docs / address -->
+    <aside class="flex flex-col gap-8 lg:w-80 lg:shrink-0">
+      <div class="flex flex-col gap-3 rounded border border-stone-300 bg-stone-100 p-4 dark:border-stone-700 dark:bg-stone-800">
+        <h3 class="font-semibold">{t('pages.contact.docs-heading')}</h3>
+        <p class="text-sm text-stone-600 dark:text-stone-300">{t('pages.contact.docs-text')}</p>
+        <a href={getLocaleUrl('docs', locale)} class="btn-primary btn-primary-small self-start">
+          <Icon name="heroicons:book-open" class="h-4 w-4" aria-hidden="true" />
+          <span>{t('pages.contact.docs-cta')}</span>
+        </a>
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <h3 class="font-semibold">{t('pages.contact.address-heading')}</h3>
+        <address class="text-sm text-stone-600 not-italic dark:text-stone-300">
+          <strong>Peltmonger Ventures GmbH</strong><br />
+          Beta-Str. 10a<br />
+          85774 Unterf&ouml;hring<br />
+          Germany
+        </address>
+        <ContactMap {locale} />
+      </div>
+    </aside>
+  </div>
 </Layout>

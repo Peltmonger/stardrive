@@ -86,6 +86,10 @@
     @apply bg-stone-200 text-stone-900 placeholder-stone-500 dark:bg-white dark:placeholder-stone-400;
   }
 
+  .input-primary-contact {
+    @apply border-stone-400 bg-white text-stone-900 placeholder-stone-400 dark:border-stone-500 dark:bg-stone-900 dark:text-stone-100 dark:placeholder-stone-500;
+  }
+
   .card-glow-light {
     box-shadow:
       0 0 0 1px rgba(255, 255, 255, 0.07),

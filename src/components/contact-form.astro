@@ -1,0 +1,175 @@
+---
+import { Icon } from "astro-icon/components";
+import { useTranslations } from "@utils/i18n";
+
+interface Props {
+  locale: string;
+}
+
+const { locale } = Astro.props as Props;
+const t = useTranslations(locale);
+
+const formAction = "#"; // Replace with your contact form endpoint
+---
+
+<form id="contact-form" class="flex flex-col gap-4 rounded-lg border border-stone-300 bg-stone-100 p-4 dark:border-stone-700 dark:bg-stone-800 sm:p-6" action={formAction} method="POST" aria-label={t('pages.contact.title')} aria-describedby="contact-success contact-error" novalidate toolname="sendContactMessage" tooldescription={t('pages.contact.tool-description')}>
+  <div class="flex flex-col gap-1">
+    <label for="contact-name" class="font-semibold text-sm">{t('pages.contact.name')}</label>
+    <input type="text" name="name" id="contact-name" autocomplete="name" required aria-required="true" aria-describedby="contact-name-error" toolparamdescription={t('pages.contact.tool-name-param')} class="input-primary input-primary-contact" placeholder={t('pages.contact.name-placeholder')} />
+    <p id="contact-name-error" class="text-red-500 dark:text-red-400 text-xs font-semibold hidden" data-required-note={t('pages.contact.required-note')}></p>
+  </div>
+  <div class="flex flex-col gap-1">
+    <label for="contact-email" class="font-semibold text-sm">{t('labels.email')}</label>
+    <input type="email" name="email" id="contact-email" autocomplete="email" required aria-required="true" aria-describedby="contact-email-error" toolparamdescription={t('pages.contact.tool-email-param')} class="input-primary input-primary-contact" placeholder={t('pages.contact.email-placeholder')} />
+    <p id="contact-email-error" class="text-red-500 dark:text-red-400 text-xs font-semibold hidden" data-required-note={t('pages.contact.required-note')} data-invalid-note={t('pages.contact.invalid-email')}></p>
+  </div>
+  <div class="flex flex-col gap-1">
+    <label for="contact-message" class="font-semibold text-sm">{t('pages.contact.message')}</label>
+    <textarea name="message" id="contact-message" rows="5" required aria-required="true" aria-describedby="contact-message-error" toolparamdescription={t('pages.contact.tool-message-param')} class="input-primary input-primary-contact resize-y" placeholder={t('pages.contact.message-placeholder')}></textarea>
+    <p id="contact-message-error" class="text-red-500 dark:text-red-400 text-xs font-semibold hidden" data-required-note={t('pages.contact.required-note')}></p>
+  </div>
+  <button id="contact-submit" type="submit" class="btn-primary self-start">
+    <Icon name="heroicons:paper-airplane" id="contact-icon-default" class="h-5 w-5" aria-hidden="true" />
+    <Icon name="heroicons:check" id="contact-icon-success" class="h-5 w-5 hidden" aria-hidden="true" />
+    <Icon name="heroicons:exclamation-triangle" id="contact-icon-error" class="h-5 w-5 hidden" aria-hidden="true" />
+    <span>{t('pages.contact.send')}</span>
+  </button>
+  <div class="text-green-600 dark:text-green-500 font-semibold text-sm hidden" id="contact-success" role="status" aria-live="polite">{t('pages.contact.success')}</div>
+  <div class="text-red-500 dark:text-red-400 font-semibold text-sm hidden" id="contact-error" role="alert" aria-live="assertive">{t('labels.generic-error')}</div>
+</form>
+
+<script>
+  const form = document.getElementById('contact-form') as HTMLFormElement | null;
+  const button = document.getElementById('contact-submit') as HTMLButtonElement | null;
+  const successDiv = document.getElementById('contact-success') as HTMLDivElement | null;
+  const errorDiv = document.getElementById('contact-error') as HTMLDivElement | null;
+
+  const iconDefault = document.getElementById('contact-icon-default');
+  const iconSuccess = document.getElementById('contact-icon-success');
+  const iconError = document.getElementById('contact-icon-error');
+
+  const fieldIds = ['contact-name', 'contact-email', 'contact-message'];
+  const invalidClasses = ['border-red-500', 'dark:border-red-400', 'ring-2', 'ring-red-500'];
+
+  function validateField(field: HTMLInputElement | HTMLTextAreaElement): boolean {
+    const note = document.getElementById(`${field.id}-error`);
+    let message = '';
+    if (!field.value.trim()) {
+      message = note?.dataset.requiredNote ?? '';
+    } else if (field.type === 'email' && !field.checkValidity()) {
+      message = note?.dataset.invalidNote ?? note?.dataset.requiredNote ?? '';
+    }
+    setFieldError(field, note, message);
+    return message === '';
+  }
+
+  function setFieldError(field: HTMLInputElement | HTMLTextAreaElement, note: HTMLElement | null, message: string) {
+    const invalid = message !== '';
+    field.classList.toggle(invalidClasses[0], invalid);
+    field.classList.toggle(invalidClasses[1], invalid);
+    field.classList.toggle(invalidClasses[2], invalid);
+    field.classList.toggle(invalidClasses[3], invalid);
+    field.setAttribute('aria-invalid', invalid ? 'true' : 'false');
+    if (note) {
+      note.textContent = message;
+      note.classList.toggle('hidden', !invalid);
+    }
+  }
+
+  for (const id of fieldIds) {
+    const field = document.getElementById(id) as HTMLInputElement | HTMLTextAreaElement | null;
+    field?.addEventListener('input', () => {
+      if (field.getAttribute('aria-invalid') === 'true') validateField(field);
+    });
+  }
+
+  function validateForm(): boolean {
+    let firstInvalid: HTMLInputElement | HTMLTextAreaElement | null = null;
+    let valid = true;
+    for (const id of fieldIds) {
+      const field = document.getElementById(id) as HTMLInputElement | HTMLTextAreaElement | null;
+      if (!field) continue;
+      if (!validateField(field)) {
+        valid = false;
+        if (!firstInvalid) firstInvalid = field;
+      }
+    }
+    firstInvalid?.focus();
+    return valid;
+  }
+
+  if (form && button) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // WebMCP declarative API: signal whether an AI agent triggered this submit
+      // so we can return a structured result/error to the model.
+      const submitEvent = e as SubmitEvent & {
+        agentInvoked?: boolean;
+        respondWith?: (result: Promise<unknown>) => void;
+      };
+      const agentInvoked = submitEvent.agentInvoked === true;
+
+      if (!validateForm()) {
+        if (agentInvoked && submitEvent.respondWith) {
+          const firstError =
+            fieldIds
+              .map((id) => document.getElementById(`${id}-error`)?.textContent)
+              .find((text) => text) ?? '';
+          submitEvent.respondWith(Promise.resolve({ ok: false, error: firstError }));
+        }
+        return;
+      }
+
+      const action = form.action;
+      const body = new FormData(form);
+
+      button.blur();
+      button.disabled = true;
+      button.setAttribute('aria-busy', 'true');
+
+      const submission = (async () => {
+        try {
+          const response = await fetch(action, { method: 'POST', body });
+          if (response.ok) {
+            form.reset();
+            for (const id of fieldIds) {
+              const field = document.getElementById(id) as HTMLInputElement | HTMLTextAreaElement | null;
+              if (field) setFieldError(field, document.getElementById(`${id}-error`), '');
+            }
+          }
+          setButtonState(response.ok ? 'success' : 'error');
+          return response.ok
+            ? { ok: true, message: successDiv?.textContent ?? '' }
+            : { ok: false, error: errorDiv?.textContent ?? '' };
+        } catch {
+          setButtonState('error');
+          return { ok: false, error: errorDiv?.textContent ?? '' };
+        } finally {
+          button.disabled = false;
+          button.removeAttribute('aria-busy');
+        }
+      })();
+
+      if (agentInvoked && submitEvent.respondWith) {
+        submitEvent.respondWith(submission);
+      }
+    });
+  }
+
+  function setButtonState(state: 'success' | 'error') {
+    if (!button) return;
+    iconDefault?.classList.add('hidden');
+    iconSuccess?.classList.toggle('hidden', state !== 'success');
+    iconError?.classList.toggle('hidden', state !== 'error');
+    successDiv?.classList.toggle('hidden', state !== 'success');
+    errorDiv?.classList.toggle('hidden', state !== 'error');
+    setTimeout(() => {
+      iconDefault?.classList.remove('hidden');
+      iconSuccess?.classList.add('hidden');
+      iconError?.classList.add('hidden');
+      successDiv?.classList.add('hidden');
+      errorDiv?.classList.add('hidden');
+    }, 4000);
+  }
+</script>

@@ -1,0 +1,284 @@
+---
+/**
+ * WebMCP Imperative API tools.
+ * @see https://developer.chrome.com/docs/ai/webmcp/imperative-api
+ *
+ * Registers read-only tools that let AI agents query the site's blog and FAQ
+ * content. Tools are only registered when the underlying content collection is
+ * defined. The data is collected at build time and queried client-side, so the
+ * tools work offline without any backend calls.
+ */
+import { getCollection } from "astro:content";
+import type { CollectionEntry } from "astro:content";
+import { collections } from "@/content.config";
+import { useTranslations, getLocaleUrl } from "@utils/i18n";
+import { sortArticleList } from "@utils/blog";
+import { themeConfig } from "~/theme.config";
+
+interface Props {
+  locale?: string;
+}
+
+const locale = Astro.props.locale || themeConfig.i18n.defaultLocale;
+const t = useTranslations(locale);
+
+const hasArticles = "articles" in collections;
+const hasFaq = "faq_answers" in collections;
+
+// --- Blog data (only if the `articles` collection is defined) ---
+let blog: {
+  tags: { id: string; label: string }[];
+  categories: { id: string; label: string }[];
+  posts: {
+    title: string;
+    url: string;
+    // date/tags/categories are kept only for client-side filtering, not returned
+    date: string;
+    tags: string[];
+    categories: string[];
+  }[];
+} | null = null;
+
+if (hasArticles) {
+  const articles = sortArticleList(
+    (await getCollection("articles", ({ id, data }) => !data.draft && id.startsWith(locale + "/"))) as CollectionEntry<"articles">[],
+  );
+
+  const tagIds = [...new Set(articles.flatMap((a) => a.data.tags ?? []))];
+  const categoryIds = [...new Set(articles.flatMap((a) => a.data.categories ?? []))];
+
+  blog = {
+    tags: tagIds.map((id) => ({ id, label: t(`tags-t.${id}`) })),
+    categories: categoryIds.map((id) => ({ id, label: t(`categories-t.${id}`) })),
+    posts: articles.map((a) => ({
+      title: a.data.title,
+      url: getLocaleUrl("blog/" + a.id.split("/").slice(-1)[0], locale),
+      date: a.data.publishDate.toISOString().slice(0, 10),
+      tags: a.data.tags ?? [],
+      categories: a.data.categories ?? [],
+    })),
+  };
+}
+
+// --- FAQ data (only if the `faq_answers` collection is defined) ---
+let faq: {
+  categories: { id: string; label: string }[];
+  entries: { question: string; category: string; answer: string }[];
+} | null = null;
+
+if (hasFaq) {
+  const faqEntries = (
+    (await getCollection("faq_answers", ({ id, data }) => !data.draft && id.startsWith(locale + "/"))) as CollectionEntry<"faq_answers">[]
+  ).sort((a, b) => a.data.question.localeCompare(b.data.question, locale));
+
+  const faqCategoryIds = [...new Set(faqEntries.map((e) => e.data.category).filter(Boolean) as string[])];
+
+  faq = {
+    categories: faqCategoryIds.map((id) => ({ id, label: t(`categories-t.${id}`) })),
+    entries: faqEntries.map((e) => ({
+      question: e.data.question,
+      category: e.data.category ?? "",
+      answer: e.body ?? "",
+    })),
+  };
+}
+
+// Tool/parameter descriptions, passed to the client script. These are read only
+// by the AI agent (never shown in user-facing UI), so they are hard-coded in
+// English rather than translated per locale.
+const labels = {
+  blogTagsDesc: "Get the list of available blog tags, each with an id and a localized label.",
+  blogCategoriesDesc: "Get the list of available blog categories, each with an id and a localized label.",
+  blogPostsDesc:
+    "Get blog posts (sorted by featured then newest first), optionally filtered by category, tag and/or a publish date range, with pagination. Returns an object with `total` (matching post count) and `posts` (the title and URL of each post on the requested page).",
+  blogPostsCategoryParam: "Filter posts by this category (id or label).",
+  blogPostsTagParam: "Filter posts by this tag (id or label).",
+  blogPostsFromParam: "Only include posts published on or after this date (YYYY-MM-DD).",
+  blogPostsToParam: "Only include posts published on or before this date (YYYY-MM-DD).",
+  blogPostsLimitParam: "Maximum number of posts to return (page size). Defaults to 10 if omitted.",
+  blogPostsOffsetParam: "Number of posts to skip before returning results. Ignored when `page` is provided.",
+  blogPostsPageParam: "1-based page number to return, using `limit` as the page size. Takes precedence over `offset`.",
+  faqCategoriesDesc: "Get the list of available FAQ categories, each with an id and a localized label.",
+  faqDesc: "Get the list of frequently asked questions and answers, optionally filtered by category.",
+  faqCategoryParam: "Filter questions by this category (id or label).",
+};
+
+const payload = { blog, faq, labels };
+const hasAnyTool = hasArticles || hasFaq;
+---
+
+{
+  hasAnyTool && (
+    <script type="application/json" id="webmcp-data" is:inline set:html={JSON.stringify(payload)} />
+  )
+}
+
+{
+  hasAnyTool && (
+    <script>
+      interface TaggedItem {
+        id: string;
+        label: string;
+      }
+      interface BlogPost {
+        title: string;
+        url: string;
+        date: string;
+        tags: string[];
+        categories: string[];
+      }
+      interface FaqEntry {
+        question: string;
+        category: string;
+        answer: string;
+      }
+      interface WebMCPData {
+        blog: { tags: TaggedItem[]; categories: TaggedItem[]; posts: BlogPost[] } | null;
+        faq: { categories: TaggedItem[]; entries: FaqEntry[] } | null;
+        labels: Record<string, string>;
+      }
+
+      let abortController: AbortController | null = null;
+
+      function matches(value: string, list: TaggedItem[], candidate: string): boolean {
+        const needle = candidate.trim().toLowerCase();
+        const item = list.find((i) => i.id.toLowerCase() === needle || i.label.toLowerCase() === needle);
+        // Match against the resolved id, or fall back to a direct id comparison.
+        return value.toLowerCase() === (item?.id.toLowerCase() ?? needle);
+      }
+
+      function registerWebMCPTools() {
+        // The API moved from navigator.modelContext (Chrome < 150) to
+        // document.modelContext (Chrome >= 150); support both.
+        const modelContext = document.modelContext ?? navigator.modelContext;
+        if (!modelContext) return; // WebMCP unsupported in this browser
+
+        const dataEl = document.getElementById("webmcp-data");
+        if (!dataEl?.textContent) return;
+
+        let data: WebMCPData;
+        try {
+          data = JSON.parse(dataEl.textContent) as WebMCPData;
+        } catch {
+          return;
+        }
+
+        // Re-register on navigation: abort previously registered tools first.
+        abortController?.abort();
+        abortController = new AbortController();
+        const { signal } = abortController;
+        const readOnly = { readOnlyHint: true, untrustedContentHint: true };
+
+        const { blog, faq, labels } = data;
+
+        if (blog) {
+          modelContext.registerTool(
+            {
+              name: "get_blog_tags",
+              description: labels.blogTagsDesc,
+              inputSchema: { type: "object", properties: {} },
+              annotations: readOnly,
+              execute: async () => JSON.stringify(blog.tags),
+            },
+            { signal },
+          );
+
+          modelContext.registerTool(
+            {
+              name: "get_blog_categories",
+              description: labels.blogCategoriesDesc,
+              inputSchema: { type: "object", properties: {} },
+              annotations: readOnly,
+              execute: async () => JSON.stringify(blog.categories),
+            },
+            { signal },
+          );
+
+          modelContext.registerTool(
+            {
+              name: "get_blog_posts",
+              description: labels.blogPostsDesc,
+              inputSchema: {
+                type: "object",
+                properties: {
+                  category: { type: "string", description: labels.blogPostsCategoryParam },
+                  tag: { type: "string", description: labels.blogPostsTagParam },
+                  fromDate: { type: "string", description: labels.blogPostsFromParam },
+                  toDate: { type: "string", description: labels.blogPostsToParam },
+                  limit: { type: "integer", minimum: 1, description: labels.blogPostsLimitParam },
+                  offset: { type: "integer", minimum: 0, description: labels.blogPostsOffsetParam },
+                  page: { type: "integer", minimum: 1, description: labels.blogPostsPageParam },
+                },
+              },
+              annotations: readOnly,
+              execute: async (args) => {
+                const { category, tag, fromDate, toDate, limit, offset, page } = (args ?? {}) as {
+                  category?: string;
+                  tag?: string;
+                  fromDate?: string;
+                  toDate?: string;
+                  limit?: number;
+                  offset?: number;
+                  page?: number;
+                };
+                let posts = blog.posts;
+                if (category) posts = posts.filter((p) => p.categories.some((c) => matches(c, blog.categories, category)));
+                if (tag) posts = posts.filter((p) => p.tags.some((tg) => matches(tg, blog.tags, tag)));
+                if (fromDate) posts = posts.filter((p) => p.date >= fromDate);
+                if (toDate) posts = posts.filter((p) => p.date <= toDate);
+
+                const total = posts.length;
+                // Pagination: `page` (1-based) takes precedence over `offset`.
+                const pageSize = limit && limit > 0 ? Math.floor(limit) : 10;
+                const start = page && page > 0 ? (Math.floor(page) - 1) * pageSize : Math.max(0, Math.floor(offset ?? 0));
+                posts = posts.slice(start, start + pageSize);
+
+                // Return only the headline and URL, plus the total for paging.
+                return JSON.stringify({ total, posts: posts.map((p) => ({ title: p.title, url: p.url })) });
+              },
+            },
+            { signal },
+          );
+        }
+
+        if (faq) {
+          modelContext.registerTool(
+            {
+              name: "get_faq_categories",
+              description: labels.faqCategoriesDesc,
+              inputSchema: { type: "object", properties: {} },
+              annotations: readOnly,
+              execute: async () => JSON.stringify(faq.categories),
+            },
+            { signal },
+          );
+
+          modelContext.registerTool(
+            {
+              name: "get_faq",
+              description: labels.faqDesc,
+              inputSchema: {
+                type: "object",
+                properties: {
+                  category: { type: "string", description: labels.faqCategoryParam },
+                },
+              },
+              annotations: readOnly,
+              execute: async (args) => {
+                const { category } = (args ?? {}) as { category?: string };
+                let entries = faq.entries;
+                if (category) entries = entries.filter((e) => e.category && matches(e.category, faq.categories, category));
+                return JSON.stringify(entries);
+              },
+            },
+            { signal },
+          );
+        }
+      }
+
+      registerWebMCPTools();
+      // Re-register after Astro view transitions (content/locale may change).
+      document.addEventListener("astro:after-swap", registerWebMCPTools);
+    </script>
+  )
+}

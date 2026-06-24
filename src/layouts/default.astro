@@ -15,6 +15,7 @@ import HeadHrefLang from "@components/head/hreflang.astro";
 import HeadOgX from "@components/head/ogx.astro";
 import WebsiteStructuredData from "@components/structured/website.astro";
 import LanguageSelect from "@components/layout/language-select.astro";
+import WebMCPTools from "@components/webmcp-tools.astro";
 import { useTranslations, getLocaleUrl } from "@utils/i18n";
 import { themeConfig } from '~/theme.config';
 
@@ -104,5 +105,6 @@ const showTopBanner = (themeConfig.promotions?.topBanner && header?.showTopBanne
       <Footer {locale} {isError} {isHome} />
     </div>
     <LanguageSelect {noi18n} {locale} />
+    <WebMCPTools {locale} />
   </body>
 </html>

@@ -59,6 +59,8 @@
     "company": "Company",
     "resources": "Resources",
     "subscribe": "Subscribe to our Newsletter",
+    "subscribe-tool": "Subscribe an email address to the newsletter.",
+    "subscribe-email-param": "The email address to subscribe to the newsletter.",
     "generic-error": "An error occurred. Please try again later."
   },
   "meta": {
@@ -121,7 +123,28 @@
     },
     "contact": {
       "title": "Contact us",
-      "description": "Get in touch with nobody - this is for demo purposes only - use GitHub for inquiries."
+      "description": "Get in touch with nobody - this is for demo purposes only - use GitHub for inquiries.",
+      "intro-heading": "Let's talk",
+      "intro-text": "Have a question, an idea or just want to say hi? Drop us a line and we'll get back to you as soon as we can.",
+      "docs-heading": "Don't want to wait?",
+      "docs-text": "Most answers are already in our documentation.",
+      "docs-cta": "Browse the docs",
+      "address-heading": "Our office",
+      "name": "Name",
+      "name-placeholder": "Your name",
+      "email-placeholder": "you@example.com",
+      "message": "Message",
+      "message-placeholder": "How can we help?",
+      "send": "Send message",
+      "success": "Thanks! Your message is on its way.",
+      "required-note": "This field is required.",
+      "invalid-email": "Please enter a valid email address.",
+      "map-label": "Map showing our office location",
+      "map-pin-title": "Official physical Stardrive launchpad",
+      "tool-description": "Send a message to the company through the contact form.",
+      "tool-name-param": "The full name of the person sending the message.",
+      "tool-email-param": "The email address to reply to.",
+      "tool-message-param": "The content of the message or inquiry."
     },
     "pricing": {
       "title": "Our Pricing",

@@ -1,9 +1,11 @@
 ![Stardrive - the Astro boilerplate for the AI age](https://github.com/peltmonger/stardrive/blob/main/repository-header.png?raw=true)
 
+<p align="center">
 [![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Astro](https://img.shields.io/badge/astro-%232C2052.svg?style=for-the-badge&logo=astro&logoColor=white)](https://astro.build/)
 [![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![LLM-friendly](https://img.shields.io/badge/LLM%20friendly-brightgreen?style=for-the-badge)](./AGENTS.md)
+</p>
 
 <br />
 
@@ -22,6 +24,8 @@ We are building on the amazing Astro project, because it is the maybe most perfo
 It also enables you to include components from any other big JavaScript framework, like React, Vue, Svelte, or Solid.
 
 We recommend deploying on Cloudflare as Astro and Stardrive are optimized for their workers, but you are also free to use any other hoster.
+
+<br />
 
 > [!WARNING]
 > Mind Astro's frontend nature!
@@ -63,6 +67,10 @@ xxx
 
 It is highly recommended to create a new project via:
 
+```sh
+npm create stardrive@latest
+```
+
 *or*
 
 ```sh
@@ -75,16 +83,21 @@ pnpm create stardrive@latest
 yarn create stardrive@latest
 ```
 
+<br />
+
 `bun` also works as long as Node is installed as well.
 
-This installer helps you to already adjust the boilerplate a little bit to your needs right from the beginning.
+The installer helps you to already adjust the boilerplate a little bit to your needs right from the beginning.
 
 > [!TIP]
 > Use the flag `--no-install` to skip the dependency install.
 > Use the flag `--version X.X.X` to use a specific version.
 
+<br />
+
 _(Alternatively, you can also always simply fork and/or clone the official repository.)_
 
+<br />
 
 ### Cleanup
 

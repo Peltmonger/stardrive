@@ -46,6 +46,8 @@
     "company": "Company",
     "resources": "Resources",
     "subscribe": "Subscribe to our Newsletter",
+    "subscribe-tool": "Inscrire une adresse e-mail à la newsletter.",
+    "subscribe-email-param": "L'adresse e-mail à inscrire à la newsletter.",
     "trusted": "Approuvé par de grandes équipes"
   },
   "meta": {
@@ -85,7 +87,28 @@
       "title": "About us"
     },
     "contact": {
-      "title": "Contact us"
+      "title": "Contact us",
+      "intro-heading": "Discutons",
+      "intro-text": "Une question, une idée ou simplement envie de dire bonjour ? Écrivez-nous et nous vous répondrons dès que possible.",
+      "docs-heading": "Pas envie d'attendre ?",
+      "docs-text": "La plupart des réponses se trouvent déjà dans notre documentation.",
+      "docs-cta": "Consulter la documentation",
+      "address-heading": "Notre bureau",
+      "name": "Nom",
+      "name-placeholder": "Votre nom",
+      "email-placeholder": "vous@exemple.fr",
+      "message": "Message",
+      "message-placeholder": "Comment pouvons-nous vous aider ?",
+      "send": "Envoyer le message",
+      "success": "Merci ! Votre message est en route.",
+      "required-note": "Ce champ est obligatoire.",
+      "invalid-email": "Veuillez saisir une adresse e-mail valide.",
+      "map-label": "Carte indiquant l'emplacement de notre bureau",
+      "map-pin-title": "Lanceur physique officiel de Stardrive",
+      "tool-description": "Envoyer un message à l'entreprise via le formulaire de contact.",
+      "tool-name-param": "Le nom complet de la personne qui envoie le message.",
+      "tool-email-param": "L'adresse e-mail pour la réponse.",
+      "tool-message-param": "Le contenu du message ou de la demande."
     },
     "pricing": {
       "title": "Our Pricing"

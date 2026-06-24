@@ -15,15 +15,17 @@ const formAction = "#"; // Replace with your newsletter subscription endpoint
 
 <div class:list={["flex flex-col gap-2", inFooter ? "mt-6 pt-6 border-t border-white/10 lg:items-end" : "lg:items-start"]}>
   {inFooter && <h3 class="font-bold text-text-dark text-base text-center p-0">{t('labels.subscribe')}!</h3>}
-  <form id="newsletter-form" class:list={["flex flex-col max-w-96 mx-auto lg:mx-0 xs:flex-row", inFooter ? "gap-2" : "gap-3"]} action={formAction} method="POST">
-    <input type="email" name="email-address" id="email-address" autocomplete="email" required class:list={["input-primary", inFooter ? "input-primary-inFooter" : "input-primary-inverse"]} placeholder={t('labels.email')} />
-    <button id="newsletter-submit" type="submit" class:list={["btn-primary", inFooter && "btn-primary-inFooter"]}>
+  {/* WebMCP: toolautosubmit lets an AI agent both fill and submit this form in one step. Safe here because subscribing is low-risk and reversible (unlike the contact form, which sends real messages and intentionally omits autosubmit). */}
+  <form id="newsletter-form" class:list={["flex flex-col max-w-96 mx-auto lg:mx-0 xs:flex-row", inFooter ? "gap-2" : "gap-3"]} action={formAction} method="POST" aria-label={t('labels.subscribe')} aria-describedby="newsletter-error" toolname="subscribeToNewsletter" tooldescription={t('labels.subscribe-tool')} toolautosubmit>
+    <label for="email-address" class="sr-only">{t('labels.email')}</label>
+    <input type="email" name="email-address" id="email-address" autocomplete="email" required aria-required="true" toolparamdescription={t('labels.subscribe-email-param')} class:list={["input-primary", inFooter ? "input-primary-inFooter" : "input-primary-inverse"]} placeholder={t('labels.email')} />
+    <button id="newsletter-submit" type="submit" aria-label={t('labels.subscribe')} class:list={["btn-primary", inFooter && "btn-primary-inFooter"]}>
       <Icon name="heroicons:check" id="icon-default" class:list={["mx-auto", inFooter ? "h-4 w-4" : "h-6 w-6"]} aria-hidden="true" />
       <Icon name="heroicons:face-smile" id="icon-success" class:list={["mx-auto hidden", inFooter ? "h-4 w-4" : "h-6 w-6"]} aria-hidden="true" />
       <Icon name="heroicons:face-frown" id="icon-error" class:list={["mx-auto hidden", inFooter ? "h-4 w-4" : "h-6 w-6"]} aria-hidden="true" />
     </button>
   </form>
-  <div class="text-red-400 dark:text-red-700 font-semibold text-xs hidden" id="newsletter-error">{t('labels.generic-error')}</div>
+  <div class="text-red-400 dark:text-red-700 font-semibold text-xs hidden" id="newsletter-error" role="alert" aria-live="assertive">{t('labels.generic-error')}</div>
 </div>
 
 <script>
@@ -39,6 +41,8 @@ const formAction = "#"; // Replace with your newsletter subscription endpoint
       const body = new FormData(form);
 
       button.blur();
+      button.disabled = true;
+      button.setAttribute('aria-busy', 'true');
 
       try {
         const response = await fetch(action, { method: 'POST', body });
@@ -50,6 +54,9 @@ const formAction = "#"; // Replace with your newsletter subscription endpoint
         setButtonState(response.ok ? 'success' : 'error');
       } catch {
         setButtonState('error');
+      } finally {
+        button.disabled = false;
+        button.removeAttribute('aria-busy');
       }
     });
   }

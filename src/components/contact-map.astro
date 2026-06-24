@@ -1,0 +1,155 @@
+---
+import { useTranslations } from "@utils/i18n";
+
+interface Props {
+  locale: string;
+  /** Latitude of the pinned location */
+  lat?: number;
+  /** Longitude of the pinned location */
+  lng?: number;
+  /** Initial zoom level */
+  zoom?: number;
+}
+
+const {
+  locale,
+  lat = 48.1892,
+  lng = 11.6547,
+  zoom = 15,
+} = Astro.props as Props;
+const t = useTranslations(locale);
+
+// Local, offline-capable vector tiles (extract of the Protomaps basemap).
+const pmtilesUrl = "/map/office.pmtiles";
+---
+
+<div
+  id="contact-map"
+  class="mt-4 h-64 w-full overflow-hidden rounded-lg border border-stone-300 bg-stone-100 sm:h-72 dark:border-stone-700 dark:bg-stone-800"
+  role="img"
+  aria-label={t('pages.contact.map-label')}
+  data-lat={lat}
+  data-lng={lng}
+  data-zoom={zoom}
+  data-pmtiles={pmtilesUrl}
+  data-pin-title={t('pages.contact.map-pin-title')}
+>
+</div>
+
+<script>
+  import L from "leaflet";
+  import "leaflet/dist/leaflet.css";
+  import { leafletLayer } from "protomaps-leaflet";
+
+  function initContactMap() {
+    const el = document.getElementById("contact-map");
+    if (!el || el.dataset.initialized === "true") return;
+    el.dataset.initialized = "true";
+
+    const lat = Number(el.dataset.lat);
+    const lng = Number(el.dataset.lng);
+    const zoom = Number(el.dataset.zoom);
+    const pmtilesUrl = el.dataset.pmtiles as string;
+    const pinTitle = el.dataset.pinTitle ?? "";
+
+    const map = L.map(el, {
+      center: [lat, lng],
+      zoom,
+      zoomControl: true,
+      scrollWheelZoom: false, // avoid hijacking page scroll
+      attributionControl: true,
+    });
+
+    const isDark = () => document.documentElement.classList.contains("dark");
+
+    const buildLayer = (): L.GridLayer =>
+      leafletLayer({
+        url: pmtilesUrl,
+        flavor: isDark() ? "dark" : "light",
+        lang: document.documentElement.lang || "en",
+        attribution:
+          '&copy; <a href="https://openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> &middot; <a href="https://protomaps.com" target="_blank" rel="noopener">Protomaps</a>',
+      }) as unknown as L.GridLayer;
+
+    let tileLayer: L.GridLayer = buildLayer();
+    tileLayer.addTo(map);
+
+    // Branded SVG pin (no external marker image assets).
+    const pin = L.divIcon({
+      className: "contact-map-pin",
+      html:
+        '<svg width="32" height="42" viewBox="0 0 32 42" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+        '<path d="M16 0C7.7 0 1 6.7 1 15c0 10.5 13.4 25.2 14 25.8a1.4 1.4 0 0 0 2 0C17.6 40.2 31 25.5 31 15 31 6.7 24.3 0 16 0z" fill="var(--color-primary, #f26430)" stroke="#fff" stroke-width="2"/>' +
+        '<circle cx="16" cy="15" r="5.5" fill="#fff"/>' +
+        "</svg>",
+      iconSize: [32, 42],
+      iconAnchor: [16, 42],
+      popupAnchor: [0, -38],
+    });
+
+    L.marker([lat, lng], { icon: pin, title: pinTitle, keyboard: true })
+      .addTo(map)
+      .bindPopup(`<strong>${pinTitle}</strong>`);
+
+    // Re-render tiles when the user toggles light/dark mode.
+    const themeObserver = new MutationObserver(() => {
+      map.removeLayer(tileLayer);
+      tileLayer = buildLayer();
+      tileLayer.addTo(map);
+    });
+    themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    // Keep the map sized correctly once it becomes visible / on resize.
+    requestAnimationFrame(() => map.invalidateSize());
+  }
+
+  initContactMap();
+  // Re-init after Astro view transitions.
+  document.addEventListener("astro:after-swap", () => {
+    const el = document.getElementById("contact-map");
+    if (el) el.dataset.initialized = "false";
+    initContactMap();
+  });
+</script>
+
+<style>
+  /* Contain Leaflet's high z-index panes/controls in their own stacking
+     context so they never paint over the fixed mobile header (z-50). */
+  #contact-map {
+    position: relative;
+    z-index: 0;
+    isolation: isolate;
+  }
+
+  /* Let the brand color flow into the inline SVG pin */
+  :global(.contact-map-pin) {
+    --color-primary: var(--color-primary);
+    background: transparent;
+    border: none;
+  }
+
+  /* Tame Leaflet controls to match the site */
+  :global(#contact-map .leaflet-control-zoom a),
+  :global(#contact-map .leaflet-bar a) {
+    color: #1c1917;
+  }
+  :global(.dark) #contact-map :global(.leaflet-control-zoom a),
+  :global(.dark) #contact-map :global(.leaflet-bar a) {
+    background-color: #292524;
+    color: #fafaf9;
+    border-color: #44403c;
+  }
+  :global(#contact-map .leaflet-control-attribution) {
+    font-size: 10px;
+  }
+  :global(.dark) #contact-map :global(.leaflet-control-attribution) {
+    background-color: rgba(41, 37, 36, 0.8);
+    color: #d6d3d1;
+  }
+  :global(.dark) #contact-map :global(.leaflet-control-attribution a) {
+    color: #a8a29e;
+  }
+</style>
