@@ -2,7 +2,9 @@
 
 ## Version 1
 
-- v1.0 : initial release
+### 1.0
+
+Initial release
 
 ## General note
 

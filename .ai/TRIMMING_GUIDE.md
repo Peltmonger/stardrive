@@ -25,6 +25,8 @@ Delete the following without asking:
 
 - `./scripts/syncVersion.js`
 - `./SECURITY.md`
+- `./CHANGELOG.md`
+- `./repository-header.png`
 - `./.github` (whole directory)
 
 ## Step 2 - Blog feature (optional)

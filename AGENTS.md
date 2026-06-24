@@ -16,3 +16,4 @@ web-app-manifest-192x192.png
 web-app-manifest-512x512.png
 
 Check whether there is a file ./.ai/TRIMMING_GUIDE.md. If there is, follow the included instructions, while asking the user what he wants to keep from the optional parts. If there is no file, move on without mentioning it.
+

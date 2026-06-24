@@ -8,7 +8,7 @@ const root = resolve(__dirname, '..');
 const pkg = JSON.parse(readFileSync(resolve(root, 'package.json'), 'utf-8'));
 const version = pkg.version;
 
-const chipPath = resolve(root, 'src/components/layout/promo/hero-chip.astro');
+const chipPath = resolve(root, 'src/components/promo/hero-chip.astro');
 const content = readFileSync(chipPath, 'utf-8');
 
 const currentVersion = content.match(/^const version = '([^']+)';/m)?.[1];

@@ -1,8 +1,9 @@
 ![Stardrive - the Astro boilerplate for the AI age](https://github.com/peltmonger/stardrive/blob/main/repository-header.png?raw=true)
 
-![TypeScript](https://img.shields.io/badge/language-TypeScript-3078c6?style=for-the-badge)
-![Astro](https://img.shields.io/badge/framework-Astro-000?style=for-the-badge)
-![LLM-friendly](https://img.shields.io/badge/LLM%20friendly-passing-brightgreen?style=for-the-badge)
+![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
+![Astro](https://img.shields.io/badge/astro-%232C2052.svg?style=for-the-badge&logo=astro&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![LLM-friendly](https://img.shields.io/badge/LLM%20friendly-brightgreen?style=for-the-badge)
 
 <br />
 
@@ -56,9 +57,49 @@ xxx
 
 <br />
 
-## 📦 Installation / Setup
+## 📦 Installation
 
-xxx
+### Creation
+
+It is highly recommended to create a new project via:
+
+*or*
+
+```sh
+pnpm create stardrive@latest
+```
+
+*or*
+
+```sh
+yarn create stardrive@latest
+```
+
+`bun` also works as long as Node is installed as well.
+
+This installer helps you to already adjust the boilerplate a little bit to your needs right from the beginning.
+
+> [!TIP]
+> Use the flag `--no-install` to skip the dependency install.
+> Use the flag `--version X.X.X` to use a specific version.
+
+_(Alternatively, you can also always simply fork and/or clone the official repository.)_
+
+
+### Cleanup
+
+Remove the following files as they are only relevant for the official boilerplate demo and repository.
+
+- `./scripts/syncVersion.js`
+- `./SECURITY.md`
+- `./CHANGELOG.md`
+- `./repository-header.png`
+- `./.github` (whole directory)
+
+During the further configuration, you will delete and adjust even more content, but this is the stuff, you can and should blindy trash at the very beginning.
+
+> [!NOTE]
+> If you have created your project via the `npm create stardrive` command, this cleanup already happend automatically!
 
 <br />
 
@@ -68,7 +109,11 @@ xxx
 
 ## 🗂️ Structure
 
-xxx
+The code structure follows the official Astro scheme. It is recommended to rather keep it that way. 
+A clear exception is the component directory. There, we rather keep the amount of files low than splitting everything into atoms. 
+Adjust this based on your project, personal taste, and coding guidelines!
+
+
 
 ---
 
