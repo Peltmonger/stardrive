@@ -69,7 +69,27 @@ New development happens on the dev branch first. It is the only branch which get
 
 Mind to run `npm install` and `npm run format` to auto-lint!
 
-Adhering to the following process is the best way to get your work included in the project:
+<br />
+
+### 🚀 The easy way: GitHub Codespaces
+
+The quickest way to contribute is right from your browser — no local setup, no forking required.
+
+1.  Open the repository in a [GitHub Codespace](https://github.com/peltmonger/stardrive/codespaces). Click the green **Code** button, switch to the **Codespaces** tab, and create a codespace on the `dev` branch. You get a fully configured VS Code environment in the cloud with everything ready to go.
+
+2.  Inside the codespace, create a topic branch off `dev` (see step 3 below), make your changes, and run `npm install` and `npm run format`.
+
+3.  Commit and push your branch. The Source Control panel (or `git push`) lets you push directly to a branch on this repository, then **open a Pull Request straight from the codespace** — no fork needed.
+
+> If you don't have write access to push a branch here, GitHub will automatically offer to create a fork for you when you push or open the PR, so this flow works for everyone.
+
+Codespaces are free for a generous monthly quota, so for most contributions you won't pay anything.
+
+<br />
+
+### 🛠️ The manual way
+
+Prefer working locally? Adhering to the following process is the best way to get your work included in the project:
 
 1.  [Fork](https://help.github.com/articles/fork-a-repo/) the project, clone your fork, and configure the remotes:
 

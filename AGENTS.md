@@ -17,3 +17,9 @@ web-app-manifest-512x512.png
 
 Check whether there is a file ./.ai/TRIMMING_GUIDE.md. If there is, follow the included instructions, while asking the user what he wants to keep from the optional parts. If there is no file, move on without mentioning it.
 
+General Guidelines:
+- alwas mind accessibility (aria-labels, right semantic, keyboard navigation, contrast)
+- mind coding guidelines
+- mind Astro guidelines
+
+On migrations, when using Cloudflare, adjust ./public/_redirects to redirect old paths to the new structure

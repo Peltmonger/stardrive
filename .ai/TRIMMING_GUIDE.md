@@ -99,6 +99,7 @@ Ask the user whether they will host on Cloudflare Workers (the boilerplate is pr
 - `./worker-configuration.d.ts`
 - `./wrangler.jsonc`
 - `./public/_headers`
+- `./public/_redirects`
 
 Then edit `./astro.config.ts` and remove:
 

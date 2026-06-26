@@ -5,15 +5,19 @@ import type { CollectionKey, CollectionEntry } from 'astro:content';
 
 const defaultLocale = themeConfig.i18n.defaultLocale;
 
+// Safe accessor for dynamic keys to avoid object-injection sinks
+function getProp(obj: unknown, key: string | number): unknown {
+  if (obj == null || typeof obj !== 'object' || !Object.hasOwn(obj, key)) return undefined;
+  // eslint-disable-next-line security/detect-object-injection -- key existence verified via Object.hasOwn
+  return (obj as Record<string, unknown>)[key];
+}
+
 // Dynamically assign to the translations object
-const translations = {} as {
+const translations = Object.fromEntries(themeConfig.i18n.locales.map((lang) => [lang, getProp(themeConfig.i18n.languageModules, lang)])) as {
   [key: string]: {
     [key: string]: string | { [key: string]: string | { [key: string]: string } };
   };
 };
-for (const lang of themeConfig.i18n.locales) {
-  translations[lang] = themeConfig.i18n.languageModules[lang as keyof typeof themeConfig.i18n.languageModules];
-}
 
 // function to be able to use t() in astro components
 export function useTranslations(lang?: keyof typeof translations) {
@@ -21,42 +25,28 @@ export function useTranslations(lang?: keyof typeof translations) {
   return function t(key: keyof (typeof translations)[typeof defaultLocale]): string {
     const keyParts = key.toString().split('.');
     if (keyParts.length > 1) {
-      const translation = translations[lang];
-      if (typeof translation === 'object' && keyParts[0] in translation) {
-        const firstLevel = translation[keyParts[0]];
-        if (typeof firstLevel === 'object') {
-          const cleanedSecond = keyParts[1].toLowerCase().replace(/\s/g, '-');
-          if (keyParts.length > 2 && cleanedSecond in firstLevel) {
-            const secondLevel = firstLevel[cleanedSecond];
-            const cleanedThird = keyParts[2].toLowerCase().replace(/\s/g, '-');
-            if (typeof secondLevel === 'object' && cleanedThird in secondLevel) {
-              return secondLevel[cleanedThird].toString();
+      const cleanedSecond = keyParts[1].toLowerCase().replace(/\s/g, '-');
+      const cleanedThird = keyParts.length > 2 ? keyParts[2].toLowerCase().replace(/\s/g, '-') : '';
+      for (const source of [lang, defaultLocale]) {
+        const firstLevel = getProp(getProp(translations, source), keyParts[0]);
+        if (firstLevel && typeof firstLevel === 'object') {
+          if (cleanedThird) {
+            const secondLevel = getProp(firstLevel, cleanedSecond);
+            if (secondLevel && typeof secondLevel === 'object') {
+              const thirdLevel = getProp(secondLevel, cleanedThird);
+              if (thirdLevel != null) return String(thirdLevel);
             }
-          } else if (cleanedSecond in firstLevel) {
-            const value = firstLevel[cleanedSecond];
+          } else {
+            const value = getProp(firstLevel, cleanedSecond);
             if (typeof value === 'string') return value;
           }
-        }
-      }
-      // Fallback to default language
-      const defaultFirst = translations[defaultLocale]?.[keyParts[0]];
-      if (typeof defaultFirst === 'object') {
-        const cleanedSecond = keyParts[1].toLowerCase().replace(/\s/g, '-');
-        if (keyParts.length > 2 && cleanedSecond in defaultFirst) {
-          const secondLevel = defaultFirst[cleanedSecond];
-          const cleanedThird = keyParts[2].toLowerCase().replace(/\s/g, '-');
-          if (typeof secondLevel === 'object' && cleanedThird in secondLevel) {
-            return secondLevel[cleanedThird].toString();
-          }
-        } else if (cleanedSecond in defaultFirst) {
-          const value = defaultFirst[cleanedSecond];
-          if (typeof value === 'string') return value;
         }
       }
       return keyParts[keyParts.length - 1].toString();
     }
     const cleanedKey = keyParts[0].toLowerCase().replace(/\s/g, '-');
-    return (translations[lang]?.[cleanedKey] ?? translations[defaultLocale]?.[cleanedKey] ?? keyParts[0].toString()).toString();
+    const value = (getProp(getProp(translations, lang), cleanedKey) ?? getProp(getProp(translations, defaultLocale), cleanedKey)) as string | undefined;
+    return (value ?? keyParts[0]).toString();
   };
 }
 
@@ -72,7 +62,8 @@ export async function getLocaleUrlWithContent(entryId: string, collection: Colle
   // get entry first
   const baseEntry = await getEntry(collection, entryId);
   // if baseEntry includes i18nSlug, we use that, otherwise we use the entryId
-  const targetId = baseEntry && 'i18nSlug' in baseEntry.data && baseEntry.data.i18nSlug?.[targetLang] ? baseEntry.data.i18nSlug[targetLang] : entryId;
+  const i18nSlug = baseEntry && 'i18nSlug' in baseEntry.data ? baseEntry.data.i18nSlug : undefined;
+  const targetId = (getProp(i18nSlug, targetLang) as string | undefined) ?? entryId;
   if (!targetLang) targetLang = defaultLocale;
   const contentEntries = [
     ...new Set(
@@ -113,27 +104,19 @@ export async function checkTranslatedPath(currentLocale: keyof typeof translatio
                 return !data.draft;
               })) as CollectionEntry<typeof collection>[]
             )
-              .map((entry) => (entry.id.endsWith('/' + entryId.split('/').pop()) || (i18nSlug && i18nSlug[entry.id.split('/')[0]]) ? entry.id.split('/')[0] : null))
+              .map((entry) => (entry.id.endsWith('/' + entryId.split('/').pop()) || getProp(i18nSlug, entry.id.split('/')[0]) ? entry.id.split('/')[0] : null))
               .filter(Boolean),
           ),
         ]
       : [];
-  return await Object.keys(translations).reduce(
-    async (accPromise, languageCode) => {
-      // unfortunately, at the moment only works with content collections
-      // TODO: when there is a stable way to identify whether the target page is 404, adjust the logic here
-      const acc = await accPromise;
-      if (languageCode === currentLocale) {
-        acc[languageCode] = true;
-      } else if (noi18n) {
-        acc[languageCode] = false;
-      } else if (collection && entryId) {
-        acc[languageCode] = contentEntries.includes(languageCode);
-      } else {
-        acc[languageCode] = true;
-      }
-      return acc;
-    },
-    Promise.resolve({} as Record<string, boolean>),
-  );
+  // unfortunately, at the moment only works with content collections
+  // TODO: when there is a stable way to identify whether the target page is 404, adjust the logic here
+  return Object.fromEntries(
+    Object.keys(translations).map((languageCode) => {
+      if (languageCode === currentLocale) return [languageCode, true];
+      if (noi18n) return [languageCode, false];
+      if (collection && entryId) return [languageCode, contentEntries.includes(languageCode)];
+      return [languageCode, true];
+    }),
+  ) as Record<string, boolean>;
 }

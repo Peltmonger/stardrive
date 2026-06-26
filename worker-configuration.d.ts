@@ -11310,7 +11310,7 @@ interface RequestInitCfPropertiesImage extends BasicImageTransformations {
      *   in combination with the properties above
      * - border - this will automatically trim the surroundings of an image based on
      *   it's color. It consists of three properties:
-     *    - color: rgb or hex representation of the color you wish to trim (todo: verify the rgba bit)
+     *    - color: rgb or hex representation of the color you wish to trim
      *    - tolerance: difference from color to treat as color
      *    - keep: the number of pixels of border to keep
      */

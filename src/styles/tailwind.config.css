@@ -6,28 +6,20 @@
 
 @theme {
   /* Fonts */
-  /* Mind to import Google Fonts at the layouts via fontsource (e.g. "import "@fontsource/geist/400.css";") - requires them to be also installed via npm and imported at the layout level */
   --font-*: initial;
+  /* Adjust the following font families to your needs */
+  /* Mind to import Google Fonts at the layouts via fontsource (e.g. "import "@fontsource/geist/400.css";") - requires them to be also installed via npm and imported at the layout level */
   --font-sans: Geist, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
   --font-serif: Georgia, Times New Roman, Times, Garamond, serif;
   --font-mono: Consolas, Courier, monospace, ui-monospace, SFMono-Regular;
   --font-headline: var(--font-sans);
 
-  /* Breakpoints */
-  --breakpoint-*: initial;
-  --breakpoint-xs: 430px;
-  --breakpoint-sm: 576px;
-  --breakpoint-md: 768px;
-  --breakpoint-lg: 976px;
-  --breakpoint-xl: 1440px;
-  --breakpoint-2xl: 1600px;
-
-  /* Colors */
+  /* Colors: Base */
   --color-transparent: transparent;
   --color-current: currentColor;
   --color-white: #fff;
   --color-black: #000;
-
+  /* Colors: Branding */
   --color-primary: #f26430;
   --color-primary-light: #f79461;
   --color-primary-dark: #c24b1f;
@@ -42,7 +34,7 @@
   --color-secondary-light-contrast: #000;
   --color-secondary-dark-contrast: #fff;
   --color-brand: var(--color-primary);
-
+  /* Colors: Utility */
   --color-background: var(--color-stone-50);
   --color-background-dark: var(--color-stone-900);
   --color-text: var(--color-stone-900);
@@ -76,6 +68,15 @@
       animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
     }
   }
+
+  /* Breakpoints */
+  --breakpoint-*: initial;
+  --breakpoint-xs: 430px;
+  --breakpoint-sm: 576px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 976px;
+  --breakpoint-xl: 1440px;
+  --breakpoint-2xl: 1600px;
 }
 
 /* Opinionated container configuration */

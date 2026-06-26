@@ -42,24 +42,7 @@ export default defineConfig({
   },
 
   vite: {
-    plugins: [
-      tailwindcss(),
-      // Force CJS packages in the dep chain to be pre-bundled for SSR/prerender
-      // environments so Vite's esbuild converts them to ESM before the Cloudflare
-      // Workers v8 isolate sees them (which has no `module` global).
-      // - debug, ms: general SSR deps
-      // - postcss-nested, postcss-selector-parser: pulled in by @expressive-code/core
-      //   (used by the <Code> component) and both use `module.exports`
-      // Remove once https://github.com/withastro/astro/issues/16248 is fixed.
-      {
-        name: 'ssr-cjs-prebundle',
-        configEnvironment(name: string) {
-          if (name !== 'client') {
-            return { optimizeDeps: { include: ['debug', 'ms'] } };
-          }
-        },
-      },
-    ],
+    plugins: [tailwindcss()],
   },
 
   markdown: {
@@ -106,5 +89,8 @@ export default defineConfig({
     }),
   ],
 
-  adapter: cloudflare({ imageService: 'cloudflare' }), // mind to activate image optimization in the Cloudflare dashboard for your Zone/Worker!
+  adapter: cloudflare({
+    imageService: 'cloudflare', // mind to activate image optimization in the Cloudflare dashboard for your Zone/Worker!
+    prerenderEnvironment: 'node', // only works for the prerender. On demand SSR uses the Cloudflare workerd runtime, which is the default and cannot be changed. Node for build is currently required due to some missing features on Cloudflare's isolated worker runtime!
+  }),
 });
