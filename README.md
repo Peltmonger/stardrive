@@ -193,7 +193,7 @@ Adjust this based on your project, personal taste, and coding guidelines!
 │   ├── postbuild.js              # Post-build hook (runs the steps below)
 │   ├── processSocialImages.js    # Auto-generates social preview images for articles
 │   ├── purgeCloudflareCache.js   # Purges CF cache after deploy (needs CF_PURGE_* env vars)
-│   ├── syncVersion.js            # ⛔ Demo/repo only — delete in your project
+│   ├── syncVersion.js            # ⛔ Demo/repo only - delete in your project
 │   └── upgrade.js                # Helper to upgrade the boilerplate
 │
 ├── types/                        # Global type definitions
@@ -201,7 +201,7 @@ Adjust this based on your project, personal taste, and coding guidelines!
 └── src/
     ├── content.config.ts         # Astro content collections schema (articles, faq, integrations)
     │
-    ├── pages/                    # File-based routing — one file per route
+    ├── pages/                    # File-based routing - one file per route
     │   ├── index.astro           # Home page
     │   ├── about.astro · contact.astro · features.astro · pricing.astro · examples.astro · faq.astro
     │   ├── signup.astro · get-listed.astro · legal-notice.astro · privacy-policy.astro
@@ -233,7 +233,7 @@ Adjust this based on your project, personal taste, and coding guidelines!
     │   ├── faq-answers/          # FAQ entries as Markdown (per language)
     │   └── integration-options/  # Integration data (per language)
     │
-    ├── i18n/                     # Translation strings — one JSON per language
+    ├── i18n/                     # Translation strings - one JSON per language
     │
     ├── images/                   # Build-optimized images (logos, content/, references/)
     │

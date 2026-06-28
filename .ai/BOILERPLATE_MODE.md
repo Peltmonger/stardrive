@@ -1,6 +1,8 @@
 # Boilerplate Mode Instructions
 
-When in the boilerplate mode, you are not adjusting the boilerpalte for a new project, but maintaining the boilerplate itself.
+You are in this mode because `./.ai/AGENT_MODE.md` contains `boilerplate`. You are not adjusting the boilerplate for a new project, but maintaining the boilerplate itself.
+
+This is the active guide for boilerplate work. The other `.ai` guides (`SETUP.md`, `CONFIG_GUIDE.md`, `TRIMMING_GUIDE.md`, `FAVICON_GUIDE.md`) describe the end-user setup flow - do **not** execute them as if you were setting up a project, but **do** read and update them whenever your changes alter that flow (see the sync rule below). For how these files relate, see the dependency overview in [`AGENTS.md`](../AGENTS.md).
 
 ## What this means
 

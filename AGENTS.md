@@ -2,11 +2,40 @@
 
 ## Analyze your high-level use case first
 
-Check for a `AGENT_MODE.md` file, if there, differentiate by case.
-"boilerplate": ignore all .ai files in terms of following them, except for the [`BOILERPLATE_MODE.md`](./.ai/BOILERPLATE_MODE.md), you are not using this boilerplate to create a new project, but maintaining the boilerplate code itself as a contributor instead!
-"project": Ignore the [`BOILERPLATE_MODE.md`](./.ai/BOILERPLATE_MODE.md). You are using the boilerplate to create a new project and website. Do not look at this codebase as a boilerplate, but an already started project, that you need to adjust and extend to match the user's specifications. Check the PLAN.md first on what's open.
+Check for an `AGENT_MODE.md` file in `./.ai/`. Its content is a single keyword that selects your mode:
 
-If there is no `AGENT_MODE.md`, execute on the [`SETUP.md`](./.ai/SETUP.md).
+- **`boilerplate`** - You are maintaining the boilerplate code itself as a contributor (not building a new website with it). Follow [`BOILERPLATE_MODE.md`](./.ai/BOILERPLATE_MODE.md). Do not execute the other `.ai` guides as setup steps (`SETUP.md`, `CONFIG_GUIDE.md`, `TRIMMING_GUIDE.md`, `FAVICON_GUIDE.md`); they describe the end-user setup flow. You may still read and **update** them when your changes affect that flow - keeping them accurate is part of boilerplate maintenance.
+- **`project`** - You are using the boilerplate to build a new project and website. Treat this codebase as an already-started project to adjust and extend to the user's specifications, not as a boilerplate. Open [`PLAN.md`](./.ai/PLAN.md) first to see what is still open. If no `PLAN.md` exists yet, the configuration has not been planned - run [`SETUP.md`](./.ai/SETUP.md) to create it. Ignore [`BOILERPLATE_MODE.md`](./.ai/BOILERPLATE_MODE.md).
+
+If there is no `AGENT_MODE.md` at all, this is a fresh start: execute [`SETUP.md`](./.ai/SETUP.md), which establishes the mode.
+
+## How the `.ai` guidance files relate
+
+The `.ai/` folder drives onboarding. The files depend on each other in a fixed order - follow the links rather than guessing what to do next:
+
+```text
+AGENTS.md (this file)            ← always read first; selects the mode
+└─ AGENT_MODE.md                 ← stores the chosen mode ("boilerplate" | "project")
+   ├─ boilerplate → BOILERPLATE_MODE.md
+   └─ project / no mode yet → SETUP.md
+                                 └─ CONFIG_GUIDE.md   ← project setup, builds PLAN.md
+                                    ├─ TRIMMING_GUIDE.md  (only for direct clones; self-deletes when done)
+                                    └─ FAVICON_GUIDE.md   (invoked at the favicon step)
+                                 → PLAN.md            ← living checklist for "project" mode
+```
+
+Quick reference:
+
+| File | Purpose | Reads / triggers | Lifecycle |
+| --- | --- | --- | --- |
+| `AGENTS.md` | Entry point + global guidelines | `AGENT_MODE.md` → mode guides | permanent |
+| `AGENT_MODE.md` | Stores selected mode | - | created by `SETUP.md` |
+| `SETUP.md` | Establishes mode, kicks off setup | `CONFIG_GUIDE.md` (project), `BOILERPLATE_MODE.md` (boilerplate) | permanent |
+| `BOILERPLATE_MODE.md` | Rules for maintaining the boilerplate | keeps `README.md` + other `.ai` guides in sync | permanent |
+| `CONFIG_GUIDE.md` | Step-by-step project configuration | `TRIMMING_GUIDE.md`, `FAVICON_GUIDE.md`; builds `PLAN.md` | permanent (kept as reference) |
+| `TRIMMING_GUIDE.md` | Removes demo content from direct clones | - | self-deletes after trimming |
+| `FAVICON_GUIDE.md` | Favicon/manifest generation | `theme.config.ts`, `base.astro` | permanent |
+| `PLAN.md` | Project setup checklist | - | created by `CONFIG_GUIDE.md`; per-project |
 
 ## This is an Astro project
 

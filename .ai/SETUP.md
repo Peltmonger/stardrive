@@ -1,18 +1,19 @@
 # Setup Guide
 
-## Preparation
+This guide establishes the working mode, then hands off to the right next guide. See the dependency overview in [`AGENTS.md`](../AGENTS.md) for the full picture.
 
-When setting up the project, ask the user whether this is about creating a new project or maintaining the boilerplate itself.
+## Step 1 - Determine the mode
 
-**Options:**
+Ask the user whether this is about creating a new project or maintaining the boilerplate itself.
 
-- "boilerplate"
-- "project"
+**Options (use the exact keyword):**
 
-Create a file `AGENT_MODE.md` in the same folder (./.ai) as the [`SETUP.md`](SETUP.md) (this file).
+- `boilerplate` - maintaining the Stardrive boilerplate codebase itself.
+- `project` - building a new website on top of the boilerplate.
 
-Set its content to the selected option.
+Create a file `AGENT_MODE.md` in the same folder as this file (`./.ai/`) and set its entire content to the single selected keyword (`boilerplate` or `project`), so future agents skip this question.
 
-## Planning next steps
+## Step 2 - Hand off to the matching guide
 
-For building new projects only, follow the step-by-step guide from the [`CONFIG_GUIDE.md`](./CONFIG_GUIDE.md). You should end up with at least having created a `PLAN.md`. 
+- **`boilerplate`** → Stop here and follow [`BOILERPLATE_MODE.md`](./BOILERPLATE_MODE.md). Do not run the project setup steps below.
+- **`project`** → Continue with the step-by-step [`CONFIG_GUIDE.md`](./CONFIG_GUIDE.md). It walks you through trimming, configuration, and theming, and you must end up having created a `PLAN.md` (in `./.ai/`) that tracks the remaining work. From then on, agents resume from `PLAN.md`.

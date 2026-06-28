@@ -1,11 +1,19 @@
 # Favicon Guide
 
+This guide is invoked from the favicon step of [`CONFIG_GUIDE.md`](./CONFIG_GUIDE.md) (project mode). It produces the icon assets in `./public/`.
+
 ## Generation
 
-Replace the favicon and `web-app-manifest-*` files in `./public/`. 
-Either advise the user to generate those files with [realfavicongenerator.net](https://realfavicongenerator.net/) or generate them directly if you are able to.
-You might want to ask the user whether he already has a base file one can use for the generation or whether all of this needs to be generated from scratch.
-Note that the webmanifest is generated dynamically from [`theme.config.ts`](../theme.config.ts) and may not be generated somewhere else.
+Replace the favicon and `web-app-manifest-*` files in `./public/`.
+
+First, ask the user whether they already have a base/source image (logo, mark) to generate from, or whether everything must be created from scratch.
+
+Then pick a generation path:
+
+- **Preferred:** generate the files yourself only if you can actually produce all required formats correctly - including a true multi-resolution `.ico` and exact pixel dimensions. If you cannot reliably emit a given format (commonly `.ico`), do not ship a fake or mislabeled file.
+- **Fallback:** direct the user to [realfavicongenerator.net](https://realfavicongenerator.net/), have them download the set, and place the files for them. Use this whenever self-generation cannot meet the exact specs below.
+
+Note that the webmanifest is generated dynamically from [`theme.config.ts`](../theme.config.ts) and must not be generated or duplicated anywhere else.
 
 You should end up having 6 files + optional additional dark mode variants.
 - favicon-96x96.png (square, 96px height, 96px width, png, transparent background if not explicitly set differently)

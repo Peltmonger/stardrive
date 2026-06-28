@@ -3563,7 +3563,7 @@ interface CloudflareAccessIdentity extends Record<string, unknown> {
 //
 // Public type surface for user Workers binding to an Agent Memory namespace.
 // ============================================================================
-/** Memory type — every memory is classified into exactly one. */
+/** Memory type - every memory is classified into exactly one. */
 type AgentMemoryMemoryType = "fact" | "event" | "instruction" | "task";
 /** Search intensity for recall. */
 type AgentMemoryThinkingLevel = "low" | "medium" | "high";
@@ -3866,7 +3866,7 @@ type AiSearchChatCompletionsRequest = {
     [key: string]: unknown;
 };
 // ============ AI Search Multi-Instance Types (Namespace-Scoped) ============
-/** `ai_search_options` shape for multi-instance requests — requires `instance_ids`. */
+/** `ai_search_options` shape for multi-instance requests - requires `instance_ids`. */
 type AiSearchMultiSearchOptions = AiSearchOptions & {
     /** Instance IDs to search across (1-10). */
     instance_ids: string[];
@@ -4428,9 +4428,9 @@ declare abstract class AiSearchInstance {
      * @returns Statistics with counts per status, last activity time, and engine details.
      */
     stats(): Promise<AiSearchStatsResponse>;
-    /** Items collection — list, upload, and manage items in this instance. */
+    /** Items collection - list, upload, and manage items in this instance. */
     get items(): AiSearchItems;
-    /** Jobs collection — list, create, and inspect indexing jobs. */
+    /** Jobs collection - list, create, and inspect indexing jobs. */
     get jobs(): AiSearchJobs;
 }
 /**
@@ -4480,7 +4480,7 @@ declare abstract class AiSearchNamespace {
     list(params?: AiSearchListInstancesParams): Promise<AiSearchListResponse>;
     /**
      * Create a new instance within the bound namespace.
-     * @param config Instance configuration. Only `id` is required — omit `type` and `source` to create with built-in storage.
+     * @param config Instance configuration. Only `id` is required - omit `type` and `source` to create with built-in storage.
      * @returns Instance service for the newly created instance.
      *
      * @example
@@ -10243,8 +10243,8 @@ declare abstract class Ai<AiModelList extends AiModelListType = AiModels> {
     // route any model name that is a literal key of `AiModelList` to one of
     // the known-model overloads above (so input/output mismatches surface as
     // type errors rather than silently falling back to `Record<string, unknown>`).
-    // Names that aren't in `AiModelList` — e.g. third-party gateway models
-    // like `"google/nano-banana"` — still hit this overload.
+    // Names that aren't in `AiModelList` - e.g. third-party gateway models
+    // like `"google/nano-banana"` - still hit this overload.
     run<Model extends string>(model: Model extends keyof AiModelList ? never : Model, inputs: Record<string, unknown>, options?: AiOptions): Promise<Record<string, unknown>>;
     models(params?: AiModelsSearchParams): Promise<AiModelsSearchObject[]>;
     toMarkdown(): ToMarkdownService;
@@ -10351,7 +10351,7 @@ declare abstract class AiGateway {
 // Licensed under the Apache 2.0 license found in the LICENSE file or at:
 //     https://opensource.org/licenses/Apache-2.0
 /**
- * Artifacts — Git-compatible file storage on Cloudflare Workers.
+ * Artifacts - Git-compatible file storage on Cloudflare Workers.
  *
  * Provides programmatic access to create, manage, and fork repositories,
  * and to issue and revoke scoped access tokens.
@@ -10379,7 +10379,7 @@ interface ArtifactsRepoInfo {
     /** HTTPS git remote URL. */
     remote: string;
 }
-/** Result of creating a repository — includes the initial access token. */
+/** Result of creating a repository - includes the initial access token. */
 interface ArtifactsCreateRepoResult {
     /** Unique repository ID. */
     id: string;
@@ -10496,7 +10496,7 @@ interface ArtifactsError extends Error {
 }
 // ── Binding ──────────────────────────────────────────────────────────────────
 /**
- * Artifacts binding — namespace-level operations.
+ * Artifacts binding - namespace-level operations.
  *
  * Methods may throw `ArtifactsError` with code `INTERNAL_ERROR` if an unexpected service error occurs.
  */
