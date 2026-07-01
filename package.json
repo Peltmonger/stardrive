@@ -66,6 +66,7 @@
     "@astrojs/solid-js": "^7.0.0",
     "@fontsource/geist": "^5.2.9",
     "@tailwindcss/vite": "^4.3.1",
+    "add-to-calendar-button": "^2.14.0",
     "astro": "^7.0.3",
     "astro-expressive-code": "^0.44.0",
     "astro-icon": "^1.1.5",

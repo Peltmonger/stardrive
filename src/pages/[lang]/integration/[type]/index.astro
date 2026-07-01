@@ -32,5 +32,5 @@ export async function getStaticPaths() {
   return paths;
 }
 
-return Astro.rewrite(`/${Astro.params.lang}/integration/${Astro.params.type}/${Astro.props.item}`);
+return Astro.redirect(`/${Astro.params.lang}/integration/${Astro.params.type}/${Astro.props.item}`, 302);
 ---

@@ -11,6 +11,7 @@
     "examples": "Examples",
     "blog": "Blog",
     "faq": "FAQ",
+    "events": "Events",
     "about": "About",
     "contact": "Contact",
     "pricing": "Pricing",
@@ -48,6 +49,7 @@
     "back": "Back",
     "back-overview": "Overview",
     "back-all-articles": "All Articles",
+    "back-all-events": "All Events",
     "pagination": "Pagination",
     "page": "Page",
     "prev": "Previous",
@@ -61,12 +63,14 @@
     "subscribe": "Subscribe to our Newsletter",
     "subscribe-tool": "Subscribe an email address to the newsletter.",
     "subscribe-email-param": "The email address to subscribe to the newsletter.",
-    "generic-error": "An error occurred. Please try again later."
+    "generic-error": "An error occurred. Please try again later.",
+    "demo-warn": "Mind that this is not sending anything at this demo!"
   },
   "meta": {
-    "title": "Fallback Title for Stardrive",
+    "title": "Fallback Title for Stardrive, if not provided by the respective page itself.",
     "description": "Fallback description for Stardrive, if not provided by the respective page itself.",
     "og-site-name": "Stardrive - the Astro Boilerplate",
+    "slug": "Stardrive - the Astro Boilerplate",
     "slogan": "The Astro boilerplate",
     "sub-slogan": "Create super stable and fast websites in the AI age."
   },
@@ -89,6 +93,8 @@
       "message": "Ooops. You somehow found a page that does not exist.\nMaybe never existed or was deleted.\n\nPlease check the URL or go back to the main page."
     },
     "home": {
+      "title": "Welcome to Stardrive - the Astro Boilerplate",
+      "description": "Stardrive is a complete Astro boilerplate and template to get your website up and running in no time with all the features you need to win.",
       "hero-chip": "Latest version",
       "hero-title": "The power of Astro, but on steroids.",
       "hero-sub-slogan": "Create super stable and fast websites in the AI age.",
@@ -179,6 +185,31 @@
     "blog": {
       "title": "Blog",
       "description": "Read our latest articles about Astro, web development and more."
+    },
+    "events": {
+      "title": "Events",
+      "description": "Discover upcoming events, conferences, and meetups related to Astro Stardrive and web development.",
+      "1": "January",
+      "2": "February",
+      "3": "March",
+      "4": "April",
+      "5": "May",
+      "6": "June",
+      "7": "July",
+      "8": "August",
+      "9": "September",
+      "10": "October",
+      "11": "November",
+      "12": "December",
+      "select-year": "Select year",
+      "when": "When",
+      "where": "Where",
+      "recurring": "Recurring",
+      "following-events": "Following events"
+    },
+    "signup": {
+      "title": "Sign Up",
+      "description": "Use this page to promote a signup, directly add a respective form, or redirect to another page. This is for demo purposes only, since there is no real signup form here."
     }
   },
   "rss": {

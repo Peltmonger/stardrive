@@ -1,0 +1,150 @@
+---
+import Layout from "@layouts/default.astro";
+import { Icon } from "astro-icon/components";
+import Headline from "@components/headline.astro";
+import AddToCalendarButton from "@components/add-to-calendar-button.astro";
+import "@styles/events.css";
+import { getCollection, getEntry, render } from 'astro:content';
+import type { CollectionEntry } from "astro:content";
+import type { ImageMetadata } from 'astro';
+import { themeConfig } from '~/theme.config';
+import { Image } from 'astro:assets';
+import { useTranslations, getLocaleUrl } from "@utils/i18n";
+import { formatRange } from "@utils/helpers";
+
+export async function getStaticPaths() {
+  const entries = await getCollection('events', ({ id, data }) => {
+    // only show articles that are not drafts
+    return !data.draft && id.startsWith(themeConfig.i18n.defaultLocale + '/');
+  }) as CollectionEntry<'events'>[];
+  const paths = entries.map((entry: CollectionEntry<'events'>) => {
+    return { params: { event: entry.id.split('/')[1] || undefined } };
+  });
+  return paths;
+}
+
+const locale = themeConfig.i18n.defaultLocale;
+const t = useTranslations(locale);
+const entry = await getEntry('events', locale + '/' + Astro.params.event as string) as CollectionEntry<'events'> | undefined;
+
+// when rendered on demand (prerender = false), an unknown slug has no entry, so fall back to the 404 page. This is a no-op when prerendered, as getStaticPaths only generates valid paths.
+if (!entry) return Astro.rewrite('/404_dynamic');
+
+// get content
+const { Content } = await render(entry);
+
+// define image
+const imageFile: ImageMetadata | undefined = entry.data.image?.file ? entry.data.image.file : undefined;
+
+// define "back" url (to include year of event)
+const backUrl = entry.data.startDate ? `/events/${new Date(entry.data.startDate).getFullYear()}` : '/events';
+
+// date splited by -
+const dateParts = formatRange(entry.data.startDate, entry.data.endDate, entry.data.allDay, locale).split(' - ');
+---
+
+<Layout title={entry.data.title} description={entry.data.description} {locale} collection="events" contentId={entry.id} header={{ button:{ text: t('labels.back-all-events'), href: backUrl } }} noTitleSlug>
+  <div class="flex flex-col">
+    {
+      imageFile ? (
+        <Image src={imageFile} alt={entry.data.image?.alt ? entry.data.image?.alt : ''} id="title-image" transition:name={'image-' + entry.id} draggable="false" priority />
+      ) : entry.data.image?.url ? (
+        <Image src={entry.data.image.url} alt={entry.data.image?.alt ? entry.data.image?.alt : ''} id="title-image" transition:name={'image-' + entry.id} draggable="false" priority inferSize />
+      ) : null
+    }
+    <Headline text={entry.data.title} class="pb-10" />
+    <div class="markdown-content border-stone-300 dark:border-stone-700 relative w-full sm:rounded-lg sm:border px-3 py-3 text-left flex flex-col md:flex-row gap-10 leading-7 sm:px-6 sm:py-5 md:px-8 md:py-7 lg:rounded-xl">
+      <div class="flex flex-col md:max-w-xs shrink-0 gap-8 border-b border-stone-300 dark:border-stone-700 pb-10 md:pb-0 md:border-b-0 md:border-r md:pr-10">
+        <div class="flex flex-col gap-1 font-semibold">
+          <div class="flex items-center gap-1 text-sm opacity-70">
+            <Icon name="heroicons:calendar-days" class="h-4 w-4 shrink-0" />
+            {t('pages.events.when')}
+          </div>
+          <div class="text-base pl-5">
+            <span class="inline-block">
+              {dateParts[0]}
+              {dateParts[1] && <span class="inline-block mx-1">-</span>}
+            </span>
+            <span class="inline-block">{dateParts[1] && dateParts[1]}</span>
+            <br />
+            <div class="text-xs opacity-70">
+              (
+              {entry.data.timeZone || 'GMT'}
+              {entry.data.rrule && `, `}
+              {entry.data.rrule && <span title={`RRULE: ${entry.data.rrule}`} class="cursor-help">{t('pages.events.recurring')}</span>}
+              )
+            </div>
+          </div>
+        </div>
+        {entry.data.location && (
+          <div class="flex flex-col gap-1 font-semibold">
+            <div class="flex items-center gap-1 text-sm opacity-70">
+              <Icon name="heroicons:map-pin" class="h-4 w-4 shrink-0" />
+              {t('pages.events.where')}
+            </div>
+            <div class="text-base pl-5">{entry.data.location}</div>
+          </div>
+        )}
+        {entry.data.organizer?.name && (
+          <div class="flex flex-col gap-1 font-semibold">
+            <div class="flex items-center gap-1 text-sm opacity-70">
+              <Icon name="heroicons:user-circle" class="h-4 w-4 shrink-0" />
+              {entry.data.organizer?.name}
+            </div>
+          </div>
+        )}
+        <div class="md:mt-8">
+          <AddToCalendarButton
+            name={entry.data.title}
+            description={entry.data.description}
+            start={entry.data.startDate}
+            end={entry.data.endDate ?? entry.data.startDate}
+            allDay={entry.data.allDay ?? false}
+            timeZone={entry.data.timeZone}
+            location={entry.data.location}
+            rrule={entry.data.rrule}
+            icsFile={entry.data.icsFile}
+            language={locale}
+            buttonStyle="default"
+            organizer={entry.data.organizer}
+          />
+        </div>
+      </div>
+      <div>
+        <Content />
+      </div>
+    </div>
+  </div>
+  <div class="mt-24">
+    <h2 class="mb-5 text-2xl font-bold italic opacity-60 select-none sm:text-3xl">
+      {t('pages.events.following-events')}
+    </h2>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-10">
+      {(async () => {
+        const allEvents = await getCollection('events', ({ id, data }) => {
+          // only show events that are not drafts and mind locale; limited to 3
+          return !data.draft && id.startsWith(locale + '/');
+        }) as CollectionEntry<'events'>[];
+        const futureEvents = allEvents
+          .filter((e) => e.data.startDate > entry.data.startDate)
+          .sort((a, b) => a.data.startDate.getTime() - b.data.startDate.getTime())
+          .slice(0, 3);
+        return futureEvents.map((e) => (
+          <a href={getLocaleUrl('events/' + e.id.split('/').slice(-1)[0], locale)} class="font-semibold sm:nth-[n+3]:hidden lg:nth-[n+3]:block px-4 py-3 text-text dark:text-text-dark no-underline rounded-lg xs:rounded-l-xl border border-stone-400 bg-white drop-shadow hover:border-primary hover:drop-shadow-xl dark:border-stone-700 dark:bg-stone-800">
+            <span>{e.data.title}</span>
+            <span class="flex mt-4 items-start gap-2 text-sm opacity-80">
+              <Icon name="heroicons:calendar-days" class="h-4 w-4 mt-px shrink-0" />
+              {formatRange(e.data.startDate, e.data.endDate, e.data.allDay, locale)}
+            </span>
+            {e.data.location && (
+              <span class="flex items-start gap-2 mt-2 text-sm opacity-80">
+                <Icon name="heroicons:map-pin" class="h-4 w-4 mt-px shrink-0" />
+                {e.data.location}
+              </span>
+            )}
+          </a>
+        ));
+      })()}
+    </div>
+  </div>
+</Layout>

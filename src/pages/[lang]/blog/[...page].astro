@@ -11,8 +11,6 @@ import { getCollection } from 'astro:content';
 import type { CollectionEntry } from "astro:content";
 import type { PaginateFunction } from 'astro';
 
-export const prerender = false; // We opt out from prerendering, assuming that might be a lot of elements here, while running on Cloudflare worker. Change this, if your case is rather about a small amount of pages
-
 export async function getStaticPaths({ paginate }: { paginate: PaginateFunction }) {
   const allArticles = sortArticleList(await getCollection('articles', ({ id, data }) => {
     // only show articles that are not drafts and not in default language (as this is taken care of by the pages on root level)

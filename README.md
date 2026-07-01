@@ -157,6 +157,31 @@ During the further configuration, you will delete and adjust even more content, 
 
 <br />
 
+## 🤖 Getting started with AI
+
+### Initial configuration and kick-off
+
+In order to get started with an AI agent or assistant, task them to configure the project first.
+
+You can use the following prompt:
+
+```text
+Start the configuration of this new Astro Stardrive Project. Mindt the AGENTS.md and especially the SETUP.md in the .ai folder.
+
+More specifications about the project I want to build:
+[put your specs here]
+```
+
+### Astro MCP
+
+You might want to add the Astro MCP to your setup. It gives the AI immediately more context. More tokens, but better results.
+
+See [their documentation](https://docs.astro.build/de/guides/build-with-ai/#installation) for guidance.
+
+---
+
+<br />
+
 ## 🗂️ Structure
 
 The code structure follows the official Astro scheme. It is recommended to rather keep it that way.
@@ -199,7 +224,7 @@ Adjust this based on your project, personal taste, and coding guidelines!
 ├── types/                        # Global type definitions
 │
 └── src/
-    ├── content.config.ts         # Astro content collections schema (articles, faq, integrations)
+    ├── content.config.ts         # Astro content collections schema (articles, faq, integrations, events)
     │
     ├── pages/                    # File-based routing - one file per route
     │   ├── index.astro           # Home page
@@ -211,9 +236,10 @@ Adjust this based on your project, personal taste, and coding guidelines!
     │   ├── site.webmanifest.ts   # Generates the PWA manifest from theme.config.ts
     │   ├── [lang]/               # i18n routes (string-translated pages share this folder)
     │   ├── de/ · es/ · fr/       # Per-language folders for hard-coded/long-form content
-    │   ├── blog/                 # Blog routes: [article], [...page], categories/, tags/
+    │   ├── blog/                 # Blog routes: [...article], [...page], categories/, tags/
     │   ├── docs/                 # Docs pages (index, guide, configuration)
-    │   └── integration/          # Integration listing routes ([type]/, index)
+    │   ├── events/               # Event listing routes: [...event], [...year]
+    │   └── integration/          # Integration listing routes: [type]/, index
     │
     ├── layouts/
     │   ├── default.astro         # Base page layout
@@ -231,6 +257,7 @@ Adjust this based on your project, personal taste, and coding guidelines!
     ├── content/                  # Markdown-based content collections
     │   ├── articles/             # Blog posts (per language)
     │   ├── faq-answers/          # FAQ entries as Markdown (per language)
+    │   ├── events/               # Events as Markdown (per language)
     │   └── integration-options/  # Integration data (per language)
     │
     ├── i18n/                     # Translation strings - one JSON per language
@@ -273,6 +300,7 @@ Third, some things are configurable via env variables at build time.
 - SITE_OVERRIDE: Would override the global site url. Useful for dev environments.
 - ROBOTS: Would override the global default robots setting. Useful for dev environments. Settings on the page level would still override this again!
 - CF_PURGE_API_KEY and CF_PURGE_ZONE_ID: Required if you want to use the Cloudflare purge script when hosting on Cloudflare workers.
+- ADD_TO_CALENDAR_PRO_API_KEY: If you want to use the pre-configured adapter for dynamically infusing events, set your API key via env variable.
 
 <br />
 
@@ -310,7 +338,7 @@ Third, some things are configurable via env variables at build time.
 10. Delete the subfolders in ./src/content/ and ./src/pages/ for those languages (e.g. "/fr"), which you do not want to support (see step 2). If you are only using 1 language, you can also drop the ./src/pages/[lang] folder as well as the [language-switcher.tsx](./src/components/layout/language-switcher.tsx) and [language-select.astro](./src/components/layout/language-select.astro) files in the components folder.
 11. Check what we put into the `<head>` for open graph and x at [./src/components/head/ogx.astro](./src/components/head/ogx.astro). Extend if you want to.
 12. Define your page structure and adjust the given demo structure under ./src/pages/ by creating a file (can be empty at first) per page. If you support >1 language, you should have a subfolder for that language as well as the generic [lang] folder. Pages, where i18n only happens via translated string go into [lang]. This keeps things simple. If you are changing a lot per language (different content) or have huge text blocks, put them in the explicit subfolder and hard-code the text.
-13. In the [astro.config.ts](./astro.config.ts), we went for static site generation. For some dynamic pages, we explicitly opted out of prerendering. Search for `export const prerender = false;` and adjust, if you only have a small amount of pages, where prerendering makes more sense than on-demand SSR. Also change, if your hosting solution only (!) supports static files.
+13. In the [astro.config.ts](./astro.config.ts), we went for static site generation. You can specify some content collections to be still rendered on-demand. You can specify them in the [theme.config.ts](./theme.config.ts) file. On is set to on-demand for the purpose of this demo. Revert this, if your hosting solution only (!) supports static files.
 14. Adjust the navigation in the ./src/components/layout/nav folder.
 15. Check the other layout files at ./src/layouts and also everything within ./src/components/layout. Adjust to match the general layout of your website.
 16. Already while building the layout, adjust the content of the json files in ./src/i18n/ to match your project.

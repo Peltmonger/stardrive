@@ -63,8 +63,8 @@ const imageFile = entry.data.image?.file ? entry.data.image.file : (!entry.data.
       class:list={[
         baseContentClasses,
         featured ? 'border-primary' : 'border-stone-400 group-hover:border-primary dark:border-stone-700',
-        wide ? 'sm:text-base' : 'sm:rounded-tr-none sm:rounded-b-lg sm:border-t-0 sm:border-l',
-        'from-primary-light to-primary-light/30 dark:from-primary-darker dark:to-primary-darker/50 px-5 py-4 text-sm font-normal text-stone-200 group-hover:bg-linear-to-b group-hover:text-text dark:group-hover:text-text-dark',
+        wide ? 'sm:text-base group-hover:bg-linear-to-r' : 'group-hover:bg-linear-to-r sm:group-hover:bg-linear-to-b sm:rounded-tr-none sm:rounded-b-lg sm:border-t-0 sm:border-l',
+        'from-primary-light to-primary-light/30 dark:from-primary-darker dark:to-primary-darker/50 px-5 py-4 text-sm font-normal text-stone-200 group-hover:text-text dark:group-hover:text-text-dark',
       ]}
     >
       <span class="block">

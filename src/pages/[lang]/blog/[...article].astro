@@ -1,0 +1,53 @@
+---
+import Layout from "@layouts/article.astro";
+import Single from "@components/blog/single.astro";
+import { getCollection, getEntry } from 'astro:content';
+import type { CollectionEntry } from "astro:content";
+import type { ImageMetadata } from 'astro';
+import { themeConfig } from '~/theme.config';
+import { sortArticleList, getAdjacentArticles } from "@utils/blog";
+import FallbackImage from "@images/content/articles-fallback.jpg";
+
+export async function getStaticPaths() {
+  const entries = await getCollection('articles', ({ id, data }) => {
+    // only show articles that are not drafts
+    return !data.draft && !id.startsWith(themeConfig.i18n.defaultLocale + '/');
+  }) as CollectionEntry<'articles'>[];
+  const paths = entries.map(entry => {
+    const [lang, ...slug] = entry.id.split('/');
+    return { params: { lang, article: slug.join('/') || undefined } };
+  });
+  return paths;
+}
+
+const locale = Astro.params.lang;
+const entry = await getEntry('articles', locale + '/' + Astro.params.article as string) as CollectionEntry<'articles'> | undefined;
+
+// when rendered on demand (prerender = false), an unknown slug has no entry, so fall back to the 404 page. This is a no-op when prerendered, as getStaticPaths only generates valid paths.
+if (!entry) return Astro.rewrite('/404_dynamic');
+
+// define image
+const imageFile: ImageMetadata | undefined = entry.data.image?.file ? entry.data.image.file : (!entry.data.image?.url && themeConfig.articles?.imageFallback) ? FallbackImage : undefined;
+
+// Get all articles for navigation
+const allArticles = sortArticleList(await getCollection('articles', ({ id, data }) => {
+  return !data.draft && id.startsWith(locale + '/');
+}) as CollectionEntry<'articles'>[]);
+
+// Find current article index
+const currentIndex = allArticles.findIndex(article => article.id === entry.id);
+
+// Get adjacent articles with fallback logic
+const { prev, next } = getAdjacentArticles(currentIndex, allArticles) ?? { prev: undefined, next: undefined };
+
+// Get article image url
+const imgUrl = (function() {
+  const url = imageFile?.src ? imageFile.src : entry.data.image?.url ? entry.data.image?.url : null;
+  if (!url) return undefined;
+  return url.split('/').pop()?.split('.')[0];
+})();
+---
+
+<Layout title={entry.data.title} imgFallback={imageFile == FallbackImage} description={entry.data.excerpt} {imgUrl} {locale}>
+  <Single {entry} {locale} {prev} {next} {imageFile} />
+</Layout>

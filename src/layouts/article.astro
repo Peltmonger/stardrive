@@ -42,7 +42,7 @@ interface Props {
   showFooterBanner?: boolean;
   robots?: string;
   isError?: boolean;
-  articleImage?: string;
+  imgUrl?: string;
   imgFallback?: boolean;
   locale?: string;
   noi18n?: boolean;
@@ -54,10 +54,10 @@ const t = useTranslations(locale);
 const collection = 'articles';
 const title = Astro.props.title || t('meta.title');
 const description = Astro.props.description || t('meta.description');
-const { articleImage, isError, noi18n, robots, imgFallback, header, showFooterBanner } = Astro.props;
+const { imgUrl, isError, noi18n, robots, imgFallback, header, showFooterBanner } = Astro.props;
 
-const ogImage = articleImage ? Astro.site + 'img/content/' + (!imgFallback ? (collection + '/') : '') + 'og_' + articleImage + '.jpg' : undefined;
-const xImage = articleImage ? Astro.site + 'img/content/' + (!imgFallback ? (collection + '/') : '') + 'x_' + articleImage + '.jpg' : undefined;
+const ogImage = imgUrl ? Astro.site + 'img/content/' + (!imgFallback ? (collection + '/') : '') + 'og_' + imgUrl + '.jpg' : undefined;
+const xImage = imgUrl ? Astro.site + 'img/content/' + (!imgFallback ? (collection + '/') : '') + 'x_' + imgUrl + '.jpg' : undefined;
 const ogTitle = themeConfig.ogTitle ?? t('meta.og-site-name');
 
 const articleEntry = await getEntry(collection, locale + '/' + Astro.params.article as string) || {} as CollectionEntry<'articles'>;
@@ -76,7 +76,7 @@ const showTopBanner = (themeConfig.promotions?.topBanner && header?.showTopBanne
     <HeadHrefLang {locale} {noi18n} {collection} contentId={articleEntry.id} />
     <HeadOgX {locale} {title} {description} {ogTitle} {ogImage} {xImage} />
     <!-- Structured Data -->
-    <ArticleStructuredData layoutTitle={title} layoutDescription={description} articleEntry={articleEntry} {locale} />
+    <ArticleStructuredData {title} {description} {articleEntry} {locale} />
     <!-- Transitions -->
     <ClientRouter />
   </head>

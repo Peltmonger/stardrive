@@ -20,7 +20,7 @@ const t = useTranslations(locale);
       entries.map(async (entry) => (
         <div>
           <a href={getLocaleUrl(`blog/${type}/${entry?.toLowerCase().replace(/\s/g, '-')}`, locale)} class="group block no-underline hover:drop-shadow-lg">
-            <span class:list={[type === 'tags' ? 'rounded-full' : 'rounded-lg', 'from-stone-300/50 dark:from-stone-500 dark:to-stone-400 border border-stone-300 dark:text-text group-hover:text-primary-contrast to-stone-200 group-hover:from-primary-light group-hover:to-primary flex items-center bg-linear-to-tr']}>
+            <span class:list={[type === 'tags' ? 'rounded-full' : 'rounded-lg', 'from-stone-300/50 dark:from-stone-800 dark:to-stone-700 border border-stone-300 dark:border-stone-600 dark:text-text-dark text-text group-hover:text-primary-contrast to-stone-200 group-hover:from-primary-light group-hover:to-primary flex items-center bg-linear-to-tr']}>
               {type === 'categories' && <span class="group-hover:bg-secondary block h-auto w-3 self-stretch rounded-l-lg" style={'background-color: ' + stringToColor(entry)} />}
               <span class:list={[small && type === 'tags' ? 'pl-4' : small && type === 'categories' && 'pl-3', small ? 'gap-2 py-1.5 pr-2' : 'gap-2 py-3 pr-4 pl-6 sm:gap-4 sm:pl-8', 'flex items-center']}>
                 <span class:list={[small && 'text-xs', 'font-semibold']}>{t(type + '-t.' + entry)}</span>

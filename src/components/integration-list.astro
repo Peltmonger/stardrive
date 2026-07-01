@@ -23,7 +23,7 @@ const items = (await getCollection('integration_options', ({ id, data }) => {
 ---
 
 <nav class="integration-list-container flex max-h-[70vh] w-full max-w-xs shrink-0 flex-col rounded-lg border border-stone-300 bg-white dark:border-stone-700 dark:bg-stone-900" aria-label="Integration list">
-  <div class="border-b border-stone-200 p-2 dark:border-stone-800">
+  <div class="border-b border-stone-200 p-2 dark:border-stone-800 bg-stone-100 rounded-t-lg dark:bg-stone-800">
     <label class="relative block">
       <span class="sr-only">{t('pages.integration.search-placeholder')}</span>
       <Icon name="heroicons:magnifying-glass" class="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-stone-500" />
@@ -65,7 +65,7 @@ const items = (await getCollection('integration_options', ({ id, data }) => {
         );
       })}
     </ul>
-    <p class="integration-list-no-results hidden p-4 text-center text-sm text-stone-500 dark:text-stone-400">
+    <p class="integration-list-no-results hidden p-4 text-center text-sm text-stone-500 dark:text-stone-400" role="status" aria-live="polite">
       {t('pages.integration.no-results')}
     </p>
   </div>

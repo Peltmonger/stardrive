@@ -10,8 +10,6 @@ import { themeConfig } from '~/theme.config';
 import { useTranslations, getLocaleUrl } from "@utils/i18n";
 import "@styles/markdown.css";
 
-export const prerender = false; // We opt out from prerendering, assuming that might be a lot of elements here, while running on Cloudflare worker. Change this, if your case is rather about a small amount of pages
-
 export async function getStaticPaths() {
   const locale = themeConfig.i18n.defaultLocale;
   const entries = (await getCollection('integration_options', ({ id, data }) => {
@@ -30,11 +28,15 @@ const { type, item } = Astro.params;
 
 const locale = themeConfig.i18n.defaultLocale;
 const t = useTranslations(locale);
-const entry = (await getEntry('integration_options', `${locale}/${item}`)) as CollectionEntry<'integration_options'>;
+const entry = (await getEntry('integration_options', `${locale}/${item}`)) as CollectionEntry<'integration_options'> | undefined;
+
+// when rendered on demand (prerender = false), an unknown slug has no entry, so fall back to the 404 page. This is a no-op when prerendered, as getStaticPaths only generates valid paths.
+if (!entry) return Astro.rewrite('/404_dynamic');
+
 const { Content } = await render(entry);
 ---
 
-<Layout title={entry.data.title} description={entry.data.description} {locale} header={{ button: { text: t('labels.explore-more'), href: getLocaleUrl('integration', locale) } }}>
+<Layout title={entry.data.title} description={entry.data.description} {locale} collection="integration_options" contentId={entry.id} header={{ button: { text: t('labels.explore-more'), href: getLocaleUrl('integration', locale) } }}>
   <Headline text={t(`pages.integration-${type}.title`)} class="pb-10" />
   <div class="flex flex-col gap-10 lg:flex-row">
     <IntegrationList {type} {locale} currentItem={item} />
@@ -68,7 +70,7 @@ const { Content } = await render(entry);
           href={entry.data.url}
           target="_blank"
           rel="noopener noreferrer"
-          class="btn-primary external-link mb-10 w-fit"
+          class="btn-primary mb-10 w-fit"
         >
           <span>{entry.data.service}</span>
           <Icon name="heroicons:arrow-top-right-on-square" class="h-5 w-5" />

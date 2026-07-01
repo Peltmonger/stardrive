@@ -1,12 +1,11 @@
 ---
-import { Icon } from "astro-icon/components";
 import { getCollection, render } from "astro:content";
 import type { CollectionEntry } from "astro:content";
 import Layout from "@layouts/default.astro";
 import Headline from "@components/headline.astro";
+import FaqList from "@components/faq-list.astro";
 import { useTranslations } from "@utils/i18n";
 import { themeConfig } from '~/theme.config';
-import "@styles/markdown.css";
 
 const locale = themeConfig.i18n.defaultLocale;
 const t = useTranslations(locale);
@@ -32,88 +31,5 @@ const categories = Array.from(
 <Layout title={t('pages.faq.title')} description={t('pages.faq.description')} schemaType="FAQPage">
   <Headline text={t('pages.faq.title')} class="pb-10" />
 
-  <div class="mb-8 flex flex-col gap-4 sm:flex-row" role="search">
-    <label class="relative grow">
-      <span class="sr-only">{t('pages.faq.search-placeholder')}</span>
-      <Icon name="heroicons:magnifying-glass" class="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-stone-500" />
-      <input
-        type="search"
-        id="faq-search"
-        class="input-primary max-w-none! pl-9"
-        placeholder={t('pages.faq.search-placeholder')}
-        autocomplete="off"
-      />
-    </label>
-    {categories.length > 0 && (
-      <label class="flex flex-col sm:w-64">
-        <span class="sr-only">{t('labels.category')}</span>
-        <select id="faq-category" class="input-primary max-w-none!">
-          <option value="">{t('pages.faq.filter-all-categories')}</option>
-          {categories.map((cat) => (
-            <option value={cat}>{t(`categories-t.${cat}`)}</option>
-          ))}
-        </select>
-      </label>
-    )}
-  </div>
-
-  <ul id="faq-list" class="m-0 flex list-none flex-col gap-3 p-0">
-    {items.map(({ entry, Content }) => (
-      <li
-        class="faq-item rounded-lg border border-stone-300 bg-white dark:border-stone-700 dark:bg-stone-900"
-        data-question={entry.data.question.toLowerCase()}
-        data-category={entry.data.category ?? ''}
-      >
-        <details class="group">
-          <summary class="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 font-semibold select-none">
-            <span>{entry.data.question}</span>
-            <Icon name="heroicons:chevron-down" class="h-5 w-5 shrink-0 transition-transform group-open:rotate-180" />
-          </summary>
-          <div class="markdown-content border-t border-stone-200 px-5 pt-3 pb-5 dark:border-stone-800">
-            <Content />
-          </div>
-        </details>
-      </li>
-    ))}
-  </ul>
-
-  <p id="faq-no-results" class="mt-8 hidden text-center text-stone-500 dark:text-stone-400">
-    {t('pages.faq.no-results')}
-  </p>
+  <FaqList {locale} {items} {categories} />
 </Layout>
-
-<style>
-  #faq-list summary::-webkit-details-marker {
-    display: none;
-  }
-</style>
-
-<script>
-  const search = document.getElementById('faq-search') as HTMLInputElement | null;
-  const categorySelect = document.getElementById('faq-category') as HTMLSelectElement | null;
-  const list = document.getElementById('faq-list');
-  const noResults = document.getElementById('faq-no-results');
-
-  if (search && list && noResults) {
-    const items = Array.from(list.querySelectorAll<HTMLLIElement>('.faq-item'));
-
-    const applyFilters = () => {
-      const query = search.value.trim().toLowerCase();
-      const category = categorySelect?.value ?? '';
-      let visible = 0;
-      for (const item of items) {
-        const question = item.getAttribute('data-question') ?? '';
-        const itemCategory = item.getAttribute('data-category') ?? '';
-        const matchesQuery = query === '' || question.includes(query);
-        const matchesCategory = category === '' || itemCategory === category;
-        const show = matchesQuery && matchesCategory;
-        item.classList.toggle('hidden', !show);
-        if (show) visible++;
-      }
-      noResults.classList.toggle('hidden', visible !== 0);
-    };
-
-    search.addEventListener('input', applyFilters);
-    categorySelect?.addEventListener('change', applyFilters);
-  }
-</script>

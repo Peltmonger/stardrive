@@ -1,0 +1,95 @@
+---
+import AddToCalendarButton from "@components/add-to-calendar-button.astro";
+import { Icon } from "astro-icon/components";
+import { getLocaleUrl, useTranslations } from "@utils/i18n";
+import { formatRange } from "@utils/helpers";
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  entries: CollectionEntry<'events'>[];
+  locale: string;
+  year: number;
+}
+
+const { entries, locale, year } = Astro.props as Props;
+const t = useTranslations(locale);
+
+// the month (1-12) an event belongs to within the selected year:
+// events whose startDate is in a previous year are bucketed into January
+const getMonth = (entry: CollectionEntry<'events'>) =>
+  entry.data.startDate.getFullYear() < year ? 1 : entry.data.startDate.getMonth() + 1;
+
+// group entries by month, keeping only months that actually have events, in ascending order
+const months = [...new Set(entries.map(getMonth))].sort((a, b) => a - b);
+const entriesByMonth = months.map((month) => ({
+  month,
+  monthEntries: entries.filter((entry) => getMonth(entry) === month),
+}));
+---
+
+<div class="flex flex-col gap-8 sm:gap-10">
+  {entriesByMonth.map(({ month, monthEntries }) => (
+    <section>
+      <h2 class="mb-4 text-xl font-bold sm:mb-6 sm:text-2xl">{t('pages.events.' + month)}</h2>
+      <ul class="m-0 flex list-none flex-col gap-4 p-0 sm:gap-6">
+        {monthEntries.map((entry) => (
+          <li class="m-0">
+            <a
+              href={getLocaleUrl('events/' + entry.id.split('/').slice(-1)[0], locale)}
+              class="group block rounded-lg xs:rounded-l-xl border border-stone-400 bg-white no-underline drop-shadow hover:border-primary hover:drop-shadow-xl dark:border-stone-700 dark:bg-stone-800"
+            >
+              <span class="group-hover:text-text flex dark:group-hover:text-text-dark">
+                <span class="hidden xs:flex items-center justify-center rounded-l-lg shrink-0 px-4 text-lg font-bold sm:text-2xl w-16 bg-stone-700 group-hover:bg-primary group-hover:text-primary-contrast text-white dark:bg-stone-300 dark:text-stone-900 sm:w-20">
+                  {entry.data.startDate.getFullYear() < year ? (
+                    <Icon name="heroicons:arrow-left" class="h-8 w-8" />
+                  ) : entry.data.startDate.getDate()}
+                </span>
+                <span class="px-5 py-4 flex flex-col gap-2 grow text-text dark:text-text-dark">
+                  <span class="text-balance text-lg font-semibold xs:text-xl">{entry.data.title}</span>
+                  <span class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm opacity-80">
+                    <span class="flex items-start gap-1">
+                      <Icon name="heroicons:calendar-days" class="h-4 w-4 mt-px shrink-0" />
+                      {formatRange(entry.data.startDate, entry.data.endDate, entry.data.allDay, locale, String(year))}
+                      {entry.data.rrule && (
+                        <div class="text-xs opacity-70 self-center">
+                          ({t('pages.events.recurring')})
+                        </div>
+                      )}
+                    </span>
+                    {entry.data.location && (
+                      <span class="flex items-start gap-1">
+                        <Icon name="heroicons:map-pin" class="h-4 w-4 mt-px shrink-0" />
+                        {entry.data.location}
+                      </span>
+                    )}
+                  </span>
+                  {entry.data.description && <span class="mt-4 hidden xs:block text-sm sm:text-base font-normal">{entry.data.description}</span>}
+                </span>
+                <span class="hidden m-4 self-start lg:block z-40" onclick="event.preventDefault();event.stopPropagation();">
+                  <AddToCalendarButton
+                    name={entry.data.title}
+                    description={entry.data.description}
+                    start={entry.data.startDate}
+                    end={entry.data.endDate ?? entry.data.startDate}
+                    allDay={entry.data.allDay ?? false}
+                    timeZone={entry.data.timeZone}
+                    location={entry.data.location}
+                    rrule={entry.data.rrule}
+                    icsFile={entry.data.icsFile}
+                    language={locale}
+                    organizer={entry.data.organizer}
+                    hideLabel
+                    forceOverlay
+                    buttonStyle="round"
+                    listStyle="modal"
+                  />
+                </span>
+                <Icon name="heroicons:arrow-right" class="h-5 w-5 mx-4 lg:hidden shrink-0 self-center" />
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))}
+</div>

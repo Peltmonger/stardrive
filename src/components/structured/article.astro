@@ -4,13 +4,13 @@ import { themeConfig } from '~/theme.config';
 import { getCleanLocaleUrl } from "@utils/i18n";
 
 interface Props {
-  layoutTitle: string;
-  layoutDescription: string;
+  title: string;
+  description: string;
   articleEntry: CollectionEntry<'articles'>;
   locale?: string;
 }
 
-const { layoutTitle, layoutDescription, articleEntry, locale } = Astro.props as Props;
+const { title, description, articleEntry, locale } = Astro.props as Props;
 
 // Destructure articleEntry to get needed fields
 const { publishDate, updateDate, author, image } = articleEntry.data;
@@ -26,8 +26,8 @@ const pageUrl = getCleanLocaleUrl(Astro.url, locale);
 const structuredData = {
   "@context": "https://schema.org",
   "@type": "Article",
-  headline: layoutTitle,
-  description: layoutDescription,
+  headline: title,
+  description: description,
   datePublished: publishDate.toISOString(),
   dateModified: updateDate?.toISOString() ?? undefined,
   url: pageUrl,

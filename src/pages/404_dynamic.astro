@@ -1,0 +1,19 @@
+---
+import { themeConfig } from '~/theme.config';
+
+// Rendered on demand so that on-demand routes (prerender = false) can fall back to it via `Astro.rewrite('/404_dynamic')`. 
+// Astro forbids rewriting from a server route to a prerendered one.
+// Once we are here, we can redirect to the prerendered 404 page. This gives us both cases - dynamic and static 404 fallback.
+// Even this page, if SSR fails, would implicitly redirect to the static 404 then.
+export const prerender = false;
+
+const defaultLocale = themeConfig.i18n.defaultLocale;
+// parse locale from path (if there is a 2-letter language code in the path, e.g. /de/xyz, then use that as the locale, otherwise use the default locale)
+const url = new URL(Astro.request.url);
+const pathParts = url.pathname.split('/').filter(Boolean);
+const localeFromPath = pathParts.length > 0 && themeConfig.i18n.locales.includes(pathParts[0]) ? pathParts[0] : null;
+const locale = Astro.props.locale || localeFromPath || defaultLocale;
+const path = locale === defaultLocale ? '/404' : `/${locale}/404`;
+
+return Astro.redirect(path, 302);
+---

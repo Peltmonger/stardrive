@@ -52,7 +52,7 @@ interface WebMCPToolDefinition {
 }
 
 interface WebMCPModelContext extends EventTarget {
-  registerTool(tool: WebMCPToolDefinition, options?: { signal?: AbortSignal; exposedTo?: string[] }): void;
+  registerTool(tool: WebMCPToolDefinition, options?: { signal?: AbortSignal; exposedTo?: string[] }): Promise<void>;
   getTools(options?: { fromOrigins?: string[] }): Promise<unknown[]>;
   executeTool(tool: unknown, args: string, options?: { signal?: AbortSignal }): Promise<unknown>;
 }

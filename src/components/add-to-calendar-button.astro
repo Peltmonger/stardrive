@@ -1,0 +1,159 @@
+---
+import type { AddToCalendarButtonType } from 'add-to-calendar-button';
+/**
+ * Add to Calendar Button
+ *
+ * Thin Astro wrapper around the `add-to-calendar-button` web component (https://add-to-calendar-button.com).
+ * The custom element renders and manages its own UI on the client, so we only emit the markup here and register the element once via a client-side <script>.
+ * No island framework is required.
+ *
+ * Attribute values are strings by design (that is how the web component reads them). For list attributes like `options`, pass a JSON-ish string such as '["Apple","Google","iCal","Outlook.com"]'.
+ *
+ * Drop-in example for an event detail page:
+ *   <AddToCalendarButton
+ *     name={entry.data.title}
+ *     description={entry.data.description}
+ *     startDate={...}
+ *     ...
+ *   />
+ */
+
+interface Props {
+  /** Event title. */
+  name: string;
+  /** Short plain-text or limited-HTML description (see https://add-to-calendar-button.com/configuration#description). */
+  description?: string;
+  /** ISO date `YYYY-MM-DDTHH:MM:SSZ`. */
+  start: Date;
+  /** ISO date `YYYY-MM-DDTHH:MM:SSZ`. Defaults to `start` when omitted. */
+  end?: Date;
+  /** Whether it is an all-day event. */
+  allDay?: boolean;
+  /** IANA time zone, e.g. `Europe/Berlin`. Use `currentBrowser` for the visitor's zone. */
+  timeZone?: string;
+  /** Free-text location or address. */
+  location?: string;
+  /** Calendar targets offered to the user. */
+  options?: AddToCalendarButtonType['options'];
+  /** Button style. */
+  buttonStyle?: AddToCalendarButtonType['buttonStyle'];
+  /** Opening style of the options list. */
+  listStyle?: AddToCalendarButtonType['listStyle'];
+  /** iCal recurrence rule, e.g. `FREQ=WEEKLY;BYDAY=MO,WE,FR`. */
+  rrule?: string;
+  /** Path/URL to a static `.ics` file (overrides on-the-fly generation). */
+  icsFile?: string;
+  /** UI language of the button. */
+  language?: string;
+  /** Optional organizer information. */
+  organizer?: {
+    name: string;
+    email: string;
+  };
+  /** Hide the label */
+  hideLabel?: boolean;
+  /** Force the list to be rendered above everything - helpful if the button is nested that deeply that it gets into conflicts with other elements */
+  forceOverlay?: boolean;
+  /** CSP Nonce Value - set, if required for your Content Security Policy */
+  nonce?: string;
+}
+
+const {
+  name,
+  description,
+  start,
+  end = start,
+  allDay = false,
+  timeZone,
+  location,
+  options = ['Apple', 'Google', 'iCal', 'Outlook.com', 'Microsoft365', 'Yahoo'],
+  buttonStyle = 'default',
+  listStyle = 'dropdown',
+  rrule,
+  icsFile,
+  language = 'en',
+  organizer,
+  hideLabel = false,
+  forceOverlay = false,
+  nonce
+} = Astro.props as Props;
+
+// The web component expects list attributes as a JSON-ish string.
+const optionsAttr = JSON.stringify(options);
+
+// map the event date data to the add-to-calendar-button format
+const pad = (value: number) => String(value).padStart(2, '0');
+const toDate = (date: Date) => `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+const toTime = (date: Date) => `${pad(date.getHours())}:${pad(date.getMinutes())}`;
+
+// map the organizer data to the add-to-calendar-button format
+const organizerAttr = organizer ? organizer.name + '|' + organizer.email : undefined;
+
+// map recurrence data to the add-to-calendar-button format
+const recurrence = rrule ? 'RRULE:' + rrule : undefined;
+
+// You can hide the branding (even if no PRO user) by setting the following to true
+// !! Keeping it off supports the underyling open source project and is highly appreciated!
+// Either way, check the benefits of the PRO offering, which enables non-technical people to manage the events calendar without touching the code.
+const hideBranding = false;
+
+// Debug mode. Disable to prevent any warnings showing up.
+// True helps you at the beginning to see if you are passing the right values. False is recommended for production.
+const debug = true;
+---
+
+<add-to-calendar-button
+  name={name}
+  description={description}
+  startDate={toDate(start)}
+  startTime={allDay ? undefined : toTime(start)}
+  endDate={toDate(end)}
+  endTime={allDay ? undefined : toTime(end)}
+  timeZone={timeZone}
+  location={location}
+  options={optionsAttr}
+  organizer={organizerAttr}
+  recurrence={recurrence}
+  icsFile={icsFile}
+  language={language}
+  buttonStyle={buttonStyle}
+  listStyle={listStyle}
+  hideTextLabelButton={hideLabel}
+  lightMode="bodyScheme"
+  trigger="click"
+  forceOverlay={forceOverlay}
+  hideBranding={hideBranding}
+  debug={debug}
+  cspnonce={nonce}
+>
+</add-to-calendar-button>
+
+<style>
+  @reference '../styles/tailwind.config.css';
+
+  /* Style override. See https://add-to-calendar-button.com/advanced-use for details. */
+  :global(add-to-calendar-button::part(atcb-button)) {
+    @apply ring-primary shadow-none border-stone-300 bg-stone-200 text-stone-950 font-sans;
+  }
+  :global(:where(.dark, .dark *) add-to-calendar-button)::part(atcb-button) {
+    @apply dark:border-stone-100 dark:bg-stone-300;
+  }
+  :global(add-to-calendar-button::part(atcb-button):hover) {
+    @apply border-primary;
+  }
+  :global(add-to-calendar-button::part(atcb-button):focus) {
+    @apply outline-0;
+  }
+  :global(add-to-calendar-button::part(atcb-button):focus-within) {
+    @apply ring-2 ring-primary;
+  }
+  :global(add-to-calendar-button::part(atcb-list)),
+  :global(.add-to-calendar::part(atcb-list)) {
+    @apply font-sans;
+  }
+</style>
+
+<script>
+  // Registers the <add-to-calendar-button> custom element client-side.
+  import 'add-to-calendar-button';
+</script>

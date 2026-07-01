@@ -11,6 +11,7 @@ import { pluginLineNumbers } from '@expressive-code/plugin-line-numbers';
 import { externalLinking } from './src/plugins/external-linking';
 import { rehypeYoutubePlugin } from './src/plugins/youtube-embed';
 import { themeConfig } from './theme.config';
+import { setOnDemandPrerender, getOnDemandSitemapPages } from './src/utils/on-demand-render';
 import cloudflare from '@astrojs/cloudflare';
 
 // i18n config for sitemap integration
@@ -22,10 +23,10 @@ export const sitemap_i18n = {
 // https://astro.build/config
 export default defineConfig({
   site: themeConfig.site,
-  // use 'server' for SSR, 'static' for static site generation (SSG); see https://docs.astro.build/en/guides/on-demand-rendering/ for details.
-  // SSR makes sense if you have a lot (!) of pages.
-  // Otherwise, use static and opt-out some pages from prerendering if needed and supported by your hosting solution (https://docs.astro.build/en/reference/routing-reference/#per-page-override).
-  // Assuming we are running on Cloudflare workers and might have a lot of blog posts and integration items, we opt for SSR for them - at least for the purpose of this demo.
+  // Astro projects are intended to deliver static pages and not to be fully rendered on-demand!
+  // You can use 'server' for SSR, see https://docs.astro.build/en/guides/on-demand-rendering/, but it is not recommended.
+  // Best approach: Use static and opt-out some pages from prerendering if needed and supported by your hosting solution (https://docs.astro.build/en/reference/routing-reference/#per-page-override).
+  // You can find an option in the themes.config.ts to mark content collections as dynamic, which will then render them on-demand instead of prerendering them.
   output: 'static',
   session: {
     // remove if you require this feature; see https://docs.astro.build/en/reference/session-driver-reference/ for details
@@ -96,7 +97,7 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
     // The Cloudflare adapter renders on-demand routes (e.g. an unmatched URL hitting the 404 page)
-    // inside the workerd runtime during `astro dev`. Some transitive CommonJS deps (debug -> ms, pulled
+    // inside the workerd runtime during `astro dev`. Some transitive CommonJS deps (e.g. debug -> ms, pulled
     // in via astro-icon -> @iconify/utils) reference the Node-only `module` global, which throws
     // "module is not defined" in workerd. Pre-bundling them with the dep optimizer (esbuild) converts
     // the CJS to ESM so they no longer reference `module`.
@@ -104,7 +105,7 @@ export default defineConfig({
     // The pre-bundling mitigates the issue for both dev and production, so we do it here.
     // see https://docs.astro.build/en/guides/integrations-guide/cloudflare/#some-dependencies-might-need-to-be-pre-compiled
     optimizeDeps: {
-      include: ['debug', 'ms'],
+      include: ['debug', 'ms', 'reading-time'],
     },
   },
 
@@ -140,7 +141,8 @@ export default defineConfig({
 
   integrations: [
     solidJs(),
-    sitemap({ i18n: sitemap_i18n }),
+    setOnDemandPrerender,
+    sitemap({ i18n: sitemap_i18n, customPages: getOnDemandSitemapPages() }),
     icon(),
     astroExpressiveCode({ themes: themeConfig.expressiveCodeThemes, plugins: [pluginLineNumbers()], defaultProps: { showLineNumbers: false } }),
     (await import('astro-compress')).default({

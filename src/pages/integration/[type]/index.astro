@@ -23,5 +23,5 @@ export async function getStaticPaths() {
   });
 }
 
-return Astro.rewrite(`/integration/${Astro.params.type}/${Astro.props.item}`);
+return Astro.redirect(`/integration/${Astro.params.type}/${Astro.props.item}`, 302);
 ---

@@ -12,9 +12,10 @@ const t = useTranslations(locale);
 
 <a
   href={getLocaleUrl('docs', locale)}
+  id="top-banner"
   role="menuitem"
   tabindex="-1"
-  class="group no-underline bg-rose-800 hover:bg-rose-700 text-white h-9 px-3 py-2 hidden sm:flex gap-1 items-center justify-center text-sm"
+  class="group no-underline bg-rose-800 hover:bg-rose-700 text-white h-9 px-3 py-2 hidden sm:flex gap-1 items-center justify-center text-sm z-50"
 >
   <span>{t("global-promo.top-text-1")}</span>
   <span class="truncate lg:inline hidden">{t("global-promo.top-text-2")}</span>

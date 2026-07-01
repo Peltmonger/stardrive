@@ -11,7 +11,7 @@ Ask the user whether this is about creating a new project or maintaining the boi
 - `boilerplate` - maintaining the Stardrive boilerplate codebase itself.
 - `project` - building a new website on top of the boilerplate.
 
-Create a file `AGENT_MODE.md` in the same folder as this file (`./.ai/`) and set its entire content to the single selected keyword (`boilerplate` or `project`), so future agents skip this question.
+Create a file `STARDRIVE_AGENT_MODE.md` in the same folder as this file (`./.ai/`) and set its entire content to the single selected keyword (`boilerplate` or `project`), so future agents skip this question.
 
 ## Step 2 - Hand off to the matching guide
 

@@ -176,7 +176,7 @@ const hasAnyTool = hasArticles || hasFaq;
         return value.toLowerCase() === (item?.id.toLowerCase() ?? needle);
       }
 
-      function registerWebMCPTools() {
+      async function registerWebMCPTools() {
         // The API moved from navigator.modelContext (Chrome < 150) to
         // document.modelContext (Chrome >= 150); support both.
         const modelContext = document.modelContext ?? navigator.modelContext;
@@ -201,7 +201,7 @@ const hasAnyTool = hasArticles || hasFaq;
         const { blog, faq, labels } = data;
 
         if (blog) {
-          modelContext.registerTool(
+          await modelContext.registerTool(
             {
               name: "get_blog_tags",
               description: labels.blogTagsDesc,
@@ -212,7 +212,7 @@ const hasAnyTool = hasArticles || hasFaq;
             { signal },
           );
 
-          modelContext.registerTool(
+          await modelContext.registerTool(
             {
               name: "get_blog_categories",
               description: labels.blogCategoriesDesc,
@@ -223,7 +223,7 @@ const hasAnyTool = hasArticles || hasFaq;
             { signal },
           );
 
-          modelContext.registerTool(
+          await modelContext.registerTool(
             {
               name: "get_blog_posts",
               description: labels.blogPostsDesc,
@@ -271,7 +271,7 @@ const hasAnyTool = hasArticles || hasFaq;
         }
 
         if (faq) {
-          modelContext.registerTool(
+          await modelContext.registerTool(
             {
               name: "get_faq_categories",
               description: labels.faqCategoriesDesc,
@@ -282,7 +282,7 @@ const hasAnyTool = hasArticles || hasFaq;
             { signal },
           );
 
-          modelContext.registerTool(
+          await modelContext.registerTool(
             {
               name: "get_faq",
               description: labels.faqDesc,
@@ -305,9 +305,11 @@ const hasAnyTool = hasArticles || hasFaq;
         }
       }
 
-      registerWebMCPTools();
+      registerWebMCPTools().catch(console.error);
       // Re-register after Astro view transitions (content/locale may change).
-      document.addEventListener("astro:after-swap", registerWebMCPTools);
+      document.addEventListener("astro:after-swap", () => {
+        registerWebMCPTools().catch(console.error);
+      });
     </script>
   )
 }

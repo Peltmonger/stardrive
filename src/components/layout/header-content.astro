@@ -32,8 +32,6 @@ interface Props {
 
 const { locale, button, tabIndex = 0, shrink = true, isHome, ctaButton, github, logoTheme } = Astro.props as Props;
 const t = useTranslations(locale);
-
-const siteName = themeConfig.name ?? themeConfig.shortName ?? t('meta.title');
 ---
 
 <div class:list={["lg:container mx-6 lg:mx-auto flex items-center gap-10 justify-between h-20", shrink && "header-content-inner transition-[height] duration-300"]}>

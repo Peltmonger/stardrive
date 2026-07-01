@@ -11,6 +11,7 @@
     "examples": "Ejemplos",
     "blog": "Blog",
     "faq": "FAQ",
+    "events": "Eventos",
     "about": "Acerca de",
     "contact": "Contacto",
     "pricing": "Precios",
@@ -48,6 +49,7 @@
     "back": "Atrás",
     "back-overview": "Resumen",
     "back-all-articles": "Todos los artículos",
+    "back-all-events": "Todos los eventos",
     "pagination": "Paginación",
     "page": "Página",
     "prev": "Anterior",
@@ -61,19 +63,21 @@
     "subscribe": "Suscríbete a nuestro boletín",
     "subscribe-tool": "Suscribir una dirección de correo electrónico al boletín.",
     "subscribe-email-param": "La dirección de correo electrónico para suscribir al boletín.",
-    "generic-error": "Se ha producido un error. Por favor, inténtalo de nuevo más tarde."
+    "generic-error": "Se ha producido un error. Por favor, inténtalo de nuevo más tarde.",
+    "demo-warn": "Ten en cuenta que en esta demostración no se envía nada."
   },
   "meta": {
-    "title": "Fallback Title for Stardrive",
-    "description": "Fallback description for Stardrive, if not provided by the respective page itself.",
-    "og-site-name": "Stardrive - the Astro Boilerplate",
-    "slogan": "The Astro boilerplate",
-    "sub-slogan": "Create super stable and fast websites in the AI age."
+    "title": "Título de respaldo para Stardrive",
+    "description": "Descripción de respaldo para Stardrive, si no se proporciona en la página correspondiente.",
+    "og-site-name": "Stardrive - el Boilerplate Astro",
+    "slug": "Stardrive - el Boilerplate Astro",
+    "slogan": "El Boilerplate Astro",
+    "sub-slogan": "Crea sitios web súper estables y rápidos en la era de la IA."
   },
   "i18n": {
-    "select-language": "Select your Language",
-    "current-language": "current one",
-    "noi18n": "Not translated"
+    "select-language": "Selecciona tu idioma",
+    "current-language": "idioma actual",
+    "noi18n": "No traducido"
   },
   "global-promo": {
     "top-text-1": "¡Esto no es solo un tema!",
@@ -89,6 +93,8 @@
       "message": "Ups. De alguna manera encontraste una página que no existe.\nQuizás nunca existió o fue eliminada.\n\nPor favor, comprueba la URL o vuelve a la página principal."
     },
     "home": {
+      "title": "Bienvenido a Stardrive - el Boilerplate Astro",
+      "description": "Stardrive es un boilerplate y plantilla Astro completos para poner tu sitio web en marcha en un abrir y cerrar de ojos con todas las funciones que necesitas para triunfar.",
       "hero-chip": "Última versión",
       "hero-title": "El poder de Astro, pero potenciado.",
       "hero-sub-slogan": "Crea sitios web súper estables y rápidos en la era de la IA.",
@@ -179,11 +185,36 @@
     "blog": {
       "title": "Blog",
       "description": "Lee nuestros últimos artículos sobre Astro, desarrollo web y más."
+    },
+    "events": {
+      "title": "Eventos",
+      "description": "Descubre próximos eventos, conferencias y encuentros relacionados con Astro Stardrive y el desarrollo web.",
+      "1": "Enero",
+      "2": "Febrero",
+      "3": "Marzo",
+      "4": "Abril",
+      "5": "Mayo",
+      "6": "Junio",
+      "7": "Julio",
+      "8": "Agosto",
+      "9": "Septiembre",
+      "10": "Octubre",
+      "11": "Noviembre",
+      "12": "Diciembre",
+      "select-year": "Seleccionar año",
+      "when": "Cuándo",
+      "where": "Dónde",
+      "recurring": "Recurrente",
+      "following-events": "Próximos eventos"
+    },
+    "signup": {
+      "title": "Registrarse",
+      "description": "Utiliza esta página para promover un registro, agregar directamente un formulario respectivo o redirigir a otra página. Esto es solo para fines de demostración, ya que no hay un formulario de registro real aquí."
     }
   },
   "rss": {
     "title": "Astro Stardrive | RSS Feed",
-    "description": "Subscribe to the RSS Feed to stay up to date with the latest articles."
+    "description": "Suscríbete al RSS Feed para mantenerte al día con los últimos artículos."
   },
   "tags-t": {
     "astro": "Astro",

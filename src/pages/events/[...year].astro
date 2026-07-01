@@ -1,0 +1,110 @@
+---
+import Layout from "@layouts/default.astro";
+import Headline from "@components/headline.astro";
+import List from "@components/event-list.astro";
+import { useTranslations, getLocaleUrl } from "@utils/i18n";
+import { themeConfig } from '~/theme.config';
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from "astro:content";
+
+// helper to get the inclusive year span of an event (minding startDate and endDate)
+const getYearSpan = (entry: CollectionEntry<'events'>) => {
+  const start = entry.data.startDate.getFullYear();
+  const end = (entry.data.endDate ?? entry.data.startDate).getFullYear();
+  return { start, end };
+};
+
+export async function getStaticPaths() {
+  const locale = themeConfig.i18n.defaultLocale;
+  // load all non-draft events for the default locale
+  const allEvents = await getCollection('events', ({ id, data }) => {
+    // only show events that are not drafts and mind locale
+    return !data.draft && id.startsWith(locale + '/');
+  }) as CollectionEntry<'events'>[];
+  // inclusive year span helper (defined inline so it is available in the isolated getStaticPaths bundle Astro builds)
+  const getYearSpan = (entry: CollectionEntry<'events'>) => {
+    const start = entry.data.startDate.getFullYear();
+    const end = (entry.data.endDate ?? entry.data.startDate).getFullYear();
+    return { start, end };
+  };
+  // collect every year that has at least one event (an event spanning several years counts for each)
+  const availableYears = [...new Set(
+    allEvents.flatMap((entry) => {
+      const { start, end } = getYearSpan(entry);
+      const years: number[] = [];
+      for (let y = start; y <= end; y++) years.push(y);
+      return years;
+    })
+  )];
+  // always include the current year so the index page can render an empty state
+  const years = [...new Set([...availableYears, new Date().getFullYear()])];
+  // the index page (`/events`) plus one page per year (`/events/<year>`)
+  return [{ params: { year: undefined } }, ...years.map((year) => ({ params: { year: String(year) } }))];
+}
+
+const locale = themeConfig.i18n.defaultLocale;
+const t = useTranslations(locale);
+
+// determine the selected year (defaulting to the current year)
+const currentYear = new Date().getFullYear();
+let year: number = parseInt(Astro.params.year || '', 10);
+if (isNaN(year)) {
+  year = currentYear;
+}
+
+// load all non-draft events for the default locale
+const allEvents = await getCollection('events', ({ id, data }) => {
+  // only show events that are not drafts and mind locale
+  return !data.draft && id.startsWith(locale + '/');
+}) as CollectionEntry<'events'>[];
+
+// events that fall within the selected year (minding both start and end date), sorted by startDate ascending
+const shownEvents = allEvents
+  .filter((entry) => {
+    const { start, end } = getYearSpan(entry);
+    return year >= start && year <= end;
+  })
+  .sort((a, b) => a.data.startDate.getTime() - b.data.startDate.getTime());
+
+// collect every year that has at least one event (an event spanning several years counts for each)
+const availableYears = [...new Set(
+  allEvents.flatMap((entry) => {
+    const { start, end } = getYearSpan(entry);
+    const years: number[] = [];
+    for (let y = start; y <= end; y++) years.push(y);
+    return years;
+  })
+)];
+
+// the years offered in the select: every year with an event plus the currently selected one
+const selectYears = [...new Set([...availableYears, year])].sort((a, b) => a - b);
+---
+
+<Layout title={t('pages.events.title') + ' ' + year} description={t('pages.events.description')} {locale}>
+  <div class="flex items-start xs:items-end mb-10 justify-between flex-col xs:flex-row gap-x-10">
+    <Headline text={t('pages.events.title')} class="grow" />
+    <div class="mb-5 flex items-center gap-3">
+      {selectYears.length > 1 ? (
+        <label class="flex items-center gap-2">
+          <span class="sr-only">{t('pages.events.select-year')}</span>
+          <select id="event-year-select" class="select-primary w-auto! max-w-none! min-w-0! text-2xl font-bold">
+            {selectYears.map((y) => (
+              <option value={getLocaleUrl(y === currentYear ? 'events' : 'events/' + y, locale)} selected={y === year}>{y}</option>
+            ))}
+          </select>
+        </label>
+      ) : (
+        <span class="text-2xl p-2 font-bold">{year}</span>
+      )}
+    </div>
+  </div>
+  {shownEvents.length > 0 ? <List entries={shownEvents} {locale} {year} /> : <div class="my-20 font-semibold text-xl italic">{t('labels.no-entries')}...</div>}
+</Layout>
+
+<script>
+  const select = document.getElementById('event-year-select');
+  select?.addEventListener('change', (event) => {
+    const url = (event.target as HTMLSelectElement).value;
+    if (url) window.location.href = url;
+  });
+</script>

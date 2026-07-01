@@ -54,7 +54,7 @@ Ask the user whether they want to keep the blog (built on Astro's content collec
 Then edit:
 
 - `./scripts/postbuild.js` - remove the line `await import('./processSocialImages.js');`
-- `./src/content.config.ts` - remove the `const articles` declaration and remove `"articles"` from the export statement at the bottom.
+- `./src/content.config.ts` - remove the `const articles` declaration and remove `articles` from the export statement at the bottom.
 - `./theme.config.ts` - remove the `articles` section, and remove `addArticles` from the `llms` settings.
 
 ## Step 3 - FAQ feature (optional)
@@ -64,11 +64,12 @@ Ask the user whether they want to keep the FAQ (also uses content collections). 
 - `./src/content/faq-answers`
 - `./src/pages/faq.astro`
 - `./src/pages/[lang]/faq.astro`
+- `./src/components/faq-list.astro`
 
 Then edit `./src/content.config.ts`:
 
 - remove the `const faq_answers` declaration
-- remove `"faq_answers"` from the export statement at the bottom
+- remove `faq_answers` from the export statement at the bottom
 
 Then edit `./theme.config.ts`:
 
@@ -87,13 +88,32 @@ Ask the user whether they want to keep the integration catalog (also uses conten
 Then edit `./src/content.config.ts`:
 
 - remove the `const integration_options` declaration
-- remove `"integration_options"` from the export statement at the bottom
+- remove `integration_options` from the export statement at the bottom
 
-## Step 5 - Navigation cleanup (always, if anything was removed)
+## Step 5 - Events feature (optional)
+
+Ask the user whether they want to keep the events (built on Astro's content collections). If they do **not** want it, remove:
+
+- `./src/styles/events.css`
+- `./src/pages/events`
+- `./src/pages/[lang]/events`
+- `./src/components/event-list.astro`
+- `./src/content/events`
+- `./src/images/content/events`
+
+Then edit:
+
+- `./src/content.config.ts` - remove the `const events` declaration and remove `events` from the export statement at the bottom.
+
+Then edit `./theme.config.ts`:
+
+- remove `addEvents` from the `llms` settings.
+
+## Step 6 - Navigation cleanup (always, if anything was removed)
 
 Edit `./src/components/layout/nav/footer-nav.astro` and remove navigation entries that point to features which were deleted. Inspect the file and remove only the links for features that no longer exist.
 
-## Step 6 - Cloudflare specifics (optional)
+## Step 7 - Cloudflare specifics (optional)
 
 Ask the user whether they will host on Cloudflare Workers (the boilerplate is preconfigured for it). If they will **not** use Cloudflare, remove:
 
@@ -116,7 +136,7 @@ Finally, uninstall the dependencies:
 npm un @astrojs/cloudflare wrangler
 ```
 
-## Step 7 - Verify, then delete this guide (always)
+## Step 8 - Verify, then delete this guide (always)
 
 1. After all edits, verify the project still builds/type-checks cleanly (e.g. run the dev server or build) and fix any references left dangling by the removals.
 2. **Delete this `TRIMMING_GUIDE.md` file.** It is only relevant for initial setup and must not ship with the user's website.

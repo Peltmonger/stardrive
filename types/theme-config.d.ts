@@ -1,4 +1,5 @@
 import type { ThemeObjectOrShikiThemeName } from 'rehype-expressive-code';
+import type { CollectionKey } from "astro:content";
 
 /**
  * Top-level configuration object for the Stardrive theme.
@@ -284,12 +285,22 @@ export interface ThemeConfig {
   };
 
   /**
+   * Mark content collections that have individual pages per item to be rendered dynamically on the server instead of being prerendered.
+   * This is useful for large collections that would otherwise bloat the build output and increase build times.
+   * 
+   * Warning: On-demand rendered collections will not be included into the llms.txt file!
+   * 
+   * Example: ['articles', 'integration_options', 'events'] - this would render all articles, integration options, and events (all possible collections in the demo) on-demand instead of prerendering them.
+   */
+  onDemandRenderedCollections?: CollectionKey[];
+
+  /**
    * Optional configuration for llms.txt file generation.
    */
   llms?: {
     /**
      * When enabled (default: false), the build process will generate an llms.txt file at the site root,
-     * including content based on the `addArticles` and `addFAQ` settings.
+     * including content based on the `addArticles`, `addEvents`, and `addFAQ` settings.
      */
     autoGeneration?: boolean;
 
@@ -300,8 +311,8 @@ export interface ThemeConfig {
      * Glob patterns for pages to exclude from llms.txt generation when `autoGeneration` is enabled.
      *
      * Patterns are matched against page URLs (e.g. "/blog/my-article"), not file paths.
-     * Content collections are not included by default in order to not blow up the llms.txt with potentially hundreds of articles or FAQ entries.
-     * You can include specific articles or FAQ entries via the `addArticles` and `addFAQ` settings, and further fine-tune inclusion/exclusion with the `includePages` setting.
+     * Content collections are not included by default in order to not blow up the llms.txt with potentially hundreds of articles, events, or FAQ entries.
+     * You can include specific articles, events, or FAQ entries via the `addArticles`, `addEvents`, and `addFAQ` settings, and further fine-tune inclusion/exclusion with the `includePages` setting.
      * Same applies for pages with robots set to "noindex" - they are excluded by default, but can be included via `includePages` if needed.
      *
      * @example ["/integration/**", "/integration/"] // excludes all pages under /integration, including the main /integration page
@@ -337,6 +348,16 @@ export interface ThemeConfig {
      * If a path is added to `includePages`, it will be included regardless of this setting, so you can still include specific FAQ entries even if you set this to `none`.
      */
     addFAQ?: string;
+    /**
+     * Determine which Events are included in llms.txt when `autoGeneration` is enabled.
+     *
+     * - `none`: No Events are included. Default.
+     * - `all`: All Events are included, except those matching `excludePagesPattern`.
+     * - `selected`: Only Events with frontmatter property `llmsTxt: true` are included.
+     *
+     * If a path is added to `includePages`, it will be included regardless of this setting, so you can still include specific Events even if you set this to `none`.
+     */
+    addEvents?: string;
   };
 }
 

@@ -19,6 +19,7 @@ import LanguageSelect from "@components/layout/language-select.astro";
 import WebMCPTools from "@components/webmcp-tools.astro";
 import { useTranslations, getLocaleUrl } from "@utils/i18n";
 import { themeConfig } from '~/theme.config';
+import type { CollectionKey } from "astro:content";
 
 interface Props {
   title?: string;
@@ -49,7 +50,10 @@ interface Props {
   locale?: string;
   noi18n?: boolean;
   isHome?: boolean;
+  noTitleSlug?: boolean; // if true, the title slug (e.g. " | Stardrive") will not be added to the title
   schemaType?: 'WebPage' | 'FAQPage';
+  collection?: CollectionKey; // we need this (for things like events or integration_options) to identify whether pages are translated or not
+  contentId?: string; // we need this (for things like events or integration_options) to identify whether pages are translated or not
 }
 
 const locale = Astro.props.locale || themeConfig.i18n.defaultLocale;
@@ -57,12 +61,13 @@ const t = useTranslations(locale);
 
 const title = Astro.props.title || t('meta.title');
 const description = Astro.props.description || t('meta.description');
-const { isError, noi18n, robots, isHome, schemaType, header, showFooterBanner } = Astro.props;
+const { isError, noi18n, noTitleSlug, robots, isHome, schemaType, header, showFooterBanner, collection, contentId } = Astro.props;
 
 const ogTitle = themeConfig.ogTitle ?? t('meta.og-site-name');
+const metaTitle = noTitleSlug ? title : title + ' | ' + t('meta.slug');
 
 const structuredDataImage = '/images/structured-preview.png'; // inside the public dir; 16:9, min 1920x1080px recommended
-const TYPE = schemaType || 'WebPage';
+const type = schemaType || 'WebPage';
 const i18nStructured = themeConfig.i18n.translatedStructuredData ? themeConfig.i18n.translatedStructuredData[locale.toString()] : null;
 const author = {
   '@type': themeConfig.author.type,
@@ -83,12 +88,12 @@ const showTopBanner = (themeConfig.promotions?.topBanner && header?.showTopBanne
 <!doctype html>
 <html lang={locale}>
   <head>
-    <HeadBase {title} {description} {locale} {robots} {isError} />
-    <HeadHrefLang {locale} {noi18n} />
-    <HeadOgX {locale} {title} {description} {ogTitle} />
+    <HeadBase title={metaTitle} {description} {locale} {robots} {isError} />
+    <HeadHrefLang {locale} {noi18n} {collection} {contentId} />
+    <HeadOgX {locale} title={metaTitle} {description} {ogTitle} />
     <!-- Structured Data -->
     {isHome ? <WebsiteStructuredData {title} image={structuredDataImage} {author} {publisher} {locale} /> : null}
-    <WebPageStructuredData type={TYPE} {title} description={description} image={structuredDataImage} {author} {publisher} {locale} />
+    <WebPageStructuredData {type} {title} {description} image={structuredDataImage} {author} {publisher} {locale} />
     <!-- Transitions -->
     <ClientRouter />
   </head>
@@ -96,7 +101,7 @@ const showTopBanner = (themeConfig.promotions?.topBanner && header?.showTopBanne
     {showTopBanner ? <TopBanner {locale} /> : null}
     <div class="relative w-full">
       {header?.hidden !== true && <Header {locale} button={header?.button ?? undefined} github="https://github.com/Peltmonger/stardrive" ctaButton={{text:t('labels.signup'),href:getLocaleUrl('signup', locale)}} {isHome} fixed={header?.fixed} overlay={header?.overlay} overlayTheme="dark" scrollDownThreshold={header?.scrollDownThreshold} closeIcon={header?.closeIcon} hasTopBanner={showTopBanner} />}
-      <main role="main">
+      <main role="main" class="relative z-40">
         {isHome && <Hero {locale} />}
         <div class="container mx-auto pt-4 md:pt-8 pb-10 md:pb-14 lg:pb-16">
           <slot />
@@ -106,7 +111,7 @@ const showTopBanner = (themeConfig.promotions?.topBanner && header?.showTopBanne
       {themeConfig.promotions?.newsletterSignup === 'bottom' && <NewsletterSignup {locale} />}
       <Footer {locale} {isError} {isHome} />
     </div>
-    <LanguageSelect {noi18n} {locale} />
+    <LanguageSelect {noi18n} {collection} {contentId} {locale} />
     <WebMCPTools {locale} />
   </body>
 </html>

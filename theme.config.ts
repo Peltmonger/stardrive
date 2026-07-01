@@ -116,13 +116,17 @@ export const themeConfig: ThemeConfig = {
     heroChip: true,
   },
 
+  // for the purpose of this demo, we render intergration options on-demand instead of prerendering them.
+  onDemandRenderedCollections: ['integration_options'],
+
   // LLM and coding assistant settings
   llms: {
     autoGeneration: true,
     intro: 'Stardrive is a boilerplate and template for Astro.js. It is build to be a alsmost all batteries included starting point for all kinds of content driven websites, like blogs, documentation sites, knowledge bases, or even marketing sites. It is also optimized for being used by and with LLMs and coding assistants to create bullet proofed websites automatically.',
-    excludePagesPattern: ['/integration/**', '/integration/'],
+    excludePagesPattern: ['/integration/**'],
     includePages: [],
     addArticles: 'selected',
+    addEvents: 'all',
     addFAQ: 'all',
   },
 };

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-// This script generates an `llms.txt` file (one per configured language) after
+// This script generates an `llms.txt` file after
 // the Astro build has finished. Unlike the previous version, it does NOT
 // scrape the full body of every page or article. Instead it lists:
 //   - the site headline and description (from the rendered home page)
@@ -48,18 +48,24 @@ function loadThemeConfig() {
       locales: ['en'],
       languages: {},
     },
+    onDemandRenderedCollections: [],
     llms: {
       autoGeneration: false,
       intro: '',
       excludePagesPattern: [],
       includePages: [],
       addArticles: 'none',
+      addEvents: 'none',
       addFAQ: 'none',
     },
   };
 
   try {
-    const themeConfigContent = fs.readFileSync(path.join(rootDir, 'theme.config.ts'), 'utf-8');
+    // Strip leading full-line `//` comments so the lightweight regex parser
+    // below ignores commented-out config. Only lines whose first non-whitespace
+    // is `//` are removed, leaving `//` inside string values (e.g. https:// URLs)
+    // untouched.
+    const themeConfigContent = fs.readFileSync(path.join(rootDir, 'theme.config.ts'), 'utf-8').replace(/^\s*\/\/.*$/gm, '');
 
     // site URL
     const siteMatch = themeConfigContent.match(/site:\s*(?:import\.meta\.env\.[A-Z_]+\s*\|\|\s*)?['"]([^'"]+)['"]/);
@@ -94,6 +100,16 @@ function loadThemeConfig() {
           config.i18n.languages[m[1]] = m[2];
         }
       }
+    }
+
+    // onDemandRenderedCollections - collections rendered SSR (no static HTML
+    // in /dist), e.g. ['articles', 'integration_options'].
+    const onDemandMatch = themeConfigContent.match(/onDemandRenderedCollections:\s*\[([\s\S]*?)\]/);
+    if (onDemandMatch) {
+      config.onDemandRenderedCollections = onDemandMatch[1]
+        .split(',')
+        .map((s) => s.trim().replace(/['"]/g, ''))
+        .filter(Boolean);
     }
 
     // llms block
@@ -134,6 +150,12 @@ function loadThemeConfig() {
       if (addFAQMatch) {
         const v = (addFAQMatch[1] || addFAQMatch[2] || '').toLowerCase();
         if (['none', 'all', 'selected'].includes(v)) config.llms.addFAQ = v;
+      }
+
+      const addEventsMatch = llmsBlock.match(/addEvents:\s*(?:LlmsContentInclusion\.([A-Za-z]+)|['"]([A-Za-z]+)['"])/);
+      if (addEventsMatch) {
+        const v = (addEventsMatch[1] || addEventsMatch[2] || '').toLowerCase();
+        if (['none', 'all', 'selected'].includes(v)) config.llms.addEvents = v;
       }
     }
   } catch (error) {
@@ -362,14 +384,51 @@ function scanCollectionDir(collectionDir, defaultLocale) {
   return items;
 }
 
-function articleUrlPath(item, defaultLocale, prefixDefaultLocale) {
-  // Slug precedence: i18nSlug[locale] is not parseable by our simple
-  // frontmatter parser, so we fall back to `slug` or the filename.
-  const slug = (typeof item.data.slug === 'string' && item.data.slug) || item.slug;
+// Resolve a collection item's URL path slug. A custom `slug` frontmatter is
+// used verbatim; otherwise we fall back to the filename, which Astro's glob
+// loader lowercases when building the route - so we lowercase it too.
+function collectionSlug(item) {
+  const custom = typeof item.data.slug === 'string' && item.data.slug;
+  const slug = custom || item.slug.toLowerCase();
   // If slug already contains the locale prefix (e.g. "de/foo"), strip it.
-  const slugNoLocale = slug.replace(/^[a-z]{2}\//, '');
+  return slug.replace(/^[a-z]{2}\//, '');
+}
+
+function articleUrlPath(item, defaultLocale, prefixDefaultLocale) {
+  const slug = collectionSlug(item);
   const usePrefix = item.locale !== defaultLocale || prefixDefaultLocale;
-  return usePrefix ? `/${item.locale}/blog/${slugNoLocale}` : `/blog/${slugNoLocale}`;
+  return usePrefix ? `/${item.locale}/blog/${slug}` : `/blog/${slug}`;
+}
+
+function eventUrlPath(item, defaultLocale, prefixDefaultLocale) {
+  const slug = collectionSlug(item);
+  const usePrefix = item.locale !== defaultLocale || prefixDefaultLocale;
+  return usePrefix ? `/${item.locale}/events/${slug}` : `/events/${slug}`;
+}
+
+/**
+ * Resolve a collection's overview page (e.g. `/blog`, `/integration`) for the
+ * default locale. Returns `{ url, title, description }` only if the overview was
+ * built as static HTML in /dist AND is not knocked out by `excludePagesPattern`.
+ * Used when a collection is rendered on-demand (no static detail pages exist),
+ * so we link to its entry point instead of dropping the content entirely.
+ */
+function resolveOverviewEntryPoint(segment, defaultLocale, prefixDefaultLocale, site, excludePatterns) {
+  const urlPath = prefixDefaultLocale ? `/${defaultLocale}/${segment}` : `/${segment}`;
+
+  if (matchesAnyPattern(urlPath, excludePatterns)) return null;
+
+  // Astro emits overview pages either as `<segment>/index.html`
+  // (build.format: 'directory') or `<segment>.html` (build.format: 'file').
+  const baseDir = prefixDefaultLocale ? path.join(distDir, defaultLocale) : distDir;
+  const candidates = [path.join(baseDir, segment, 'index.html'), path.join(baseDir, `${segment}.html`)];
+  const indexFile = candidates.find((f) => fs.existsSync(f));
+  if (!indexFile) return null;
+
+  const meta = getPageMetaFromFile(indexFile);
+  if (meta.noindex) return null;
+
+  return { url: `${site}${urlPath}`, title: meta.title || segment, description: meta.description };
 }
 
 function selectCollectionItems(items, mode, locale, includePages, urlBuilder) {
@@ -407,7 +466,8 @@ async function generateLLMFiles() {
   // Discover collections
   const articleItems = scanCollectionDir(path.join(contentDir, 'articles'), defaultLocale);
   const faqItems = scanCollectionDir(path.join(contentDir, 'faq-answers'), defaultLocale);
-  console.log(`📚 Found ${articleItems.length} article(s) and ${faqItems.length} FAQ entry/entries`);
+  const eventItems = scanCollectionDir(path.join(contentDir, 'events'), defaultLocale);
+  console.log(`📚 Found ${articleItems.length} article(s), ${eventItems.length} event(s) and ${faqItems.length} FAQ entry/entries`);
 
   // A single llms.txt is generated, using the default-locale content. The
   // available-languages list (below) lets an LLM point users to the right
@@ -453,11 +513,11 @@ async function generateLLMFiles() {
   out += `\n`;
 
   // ---- Pages ----
-  const collectionSegments = ['blog', 'faq', 'faq-answers'];
+  const collectionSegments = ['blog', 'events', 'faq', 'faq-answers'];
   const langPages = distPages
     .filter((p) => p.language === lang)
     .filter((p) => {
-      // Skip pages that belong to the article/FAQ collections - those are
+      // Skip pages that belong to the article/event/FAQ collections - those are
       // handled separately below.
       if (isUnderCollection(p.urlPath, collectionSegments)) return false;
 
@@ -511,18 +571,64 @@ async function generateLLMFiles() {
   }
 
   // ---- Articles ----
-  const selectedArticles = selectCollectionItems(articleItems, llms.addArticles, lang, llms.includePages, (it) => articleUrlPath(it, defaultLocale, prefixDefaultLocale));
-  if (selectedArticles.length > 0) {
-    out += `## Articles\n\n`;
-    for (const it of selectedArticles) {
-      const title = it.data.title || it.slug;
-      const excerpt = it.data.excerpt || '';
-      const url = `${site}${articleUrlPath(it, defaultLocale, prefixDefaultLocale)}`;
-      const details = excerpt ? `: ${excerpt}` : '';
-      out += `- [${title}](${url})${details}\n`;
+  // When the `articles` collection is rendered on-demand, no static article
+  // pages exist in /dist. Rather than listing items we cannot reliably link
+  // to, point agents at the /blog overview as the entry point.
+  const articlesOnDemand = config.onDemandRenderedCollections.includes('articles');
+  if (articlesOnDemand && llms.addArticles !== 'none') {
+    const entry = resolveOverviewEntryPoint('blog', defaultLocale, prefixDefaultLocale, site, llms.excludePagesPattern);
+    if (entry) {
+      out += `## Articles\n\n`;
+      out += `- [${entry.title}](${entry.url})${entry.description ? `: ${entry.description}` : ''}\n`;
+      out += `  This collection is rendered on-demand. Use this overview page as the entry point to discover all articles.\n\n`;
     }
-    out += `\n`;
+  } else {
+    const selectedArticles = selectCollectionItems(articleItems, llms.addArticles, lang, llms.includePages, (it) => articleUrlPath(it, defaultLocale, prefixDefaultLocale));
+    if (selectedArticles.length > 0) {
+      out += `## Articles\n\n`;
+      for (const it of selectedArticles) {
+        const title = it.data.title || it.slug;
+        const excerpt = it.data.excerpt || '';
+        const url = `${site}${articleUrlPath(it, defaultLocale, prefixDefaultLocale)}`;
+        const details = excerpt ? `: ${excerpt}` : '';
+        out += `- [${title}](${url})${details}\n`;
+      }
+      out += `\n`;
+    }
   }
+
+  // ---- Events ----
+  // Mirrors the Articles logic: when the `events` collection is rendered
+  // on-demand, no static event pages exist in /dist, so we point agents at the
+  // /events overview instead of listing items we cannot reliably link to.
+  const eventsOnDemand = config.onDemandRenderedCollections.includes('events');
+  if (eventsOnDemand && llms.addEvents !== 'none') {
+    const entry = resolveOverviewEntryPoint('events', defaultLocale, prefixDefaultLocale, site, llms.excludePagesPattern);
+    if (entry) {
+      out += `## Events\n\n`;
+      out += `- [${entry.title}](${entry.url})${entry.description ? `: ${entry.description}` : ''}\n`;
+      out += `  This collection is rendered on-demand. Use this overview page as the entry point to discover all events.\n\n`;
+    }
+  } else {
+    const selectedEvents = selectCollectionItems(eventItems, llms.addEvents, lang, llms.includePages, (it) => eventUrlPath(it, defaultLocale, prefixDefaultLocale));
+    if (selectedEvents.length > 0) {
+      out += `## Events\n\n`;
+      for (const it of selectedEvents) {
+        const title = it.data.title || it.slug;
+        const description = it.data.description || '';
+        const url = `${site}${eventUrlPath(it, defaultLocale, prefixDefaultLocale)}`;
+        const details = description ? `: ${description}` : '';
+        out += `- [${title}](${url})${details}\n`;
+      }
+      out += `\n`;
+    }
+  }
+
+  // ---- Integration options ----
+  // Integration detail pages have no dedicated llms setting. The /integration
+  // overview is picked up by the Pages section automatically (unless excluded
+  // via excludePagesPattern), so on-demand rendering needs no special handling
+  // here - the overview already serves as the entry point.
 
   const outPath = path.join(distDir, `llms.txt`);
   fs.writeFileSync(outPath, out, 'utf-8');

@@ -34,6 +34,7 @@ const formAction = "#"; // Replace with your contact form endpoint
     <Icon name="heroicons:exclamation-triangle" id="contact-icon-error" class="h-5 w-5 hidden" aria-hidden="true" />
     <span>{t('pages.contact.send')}</span>
   </button>
+  <div class="text-orange-500 dark:text-orange-400 font-semibold text-sm" role="alert" aria-live="assertive">{t('labels.demo-warn')}</div>
   <div class="text-green-600 dark:text-green-500 font-semibold text-sm hidden" id="contact-success" role="status" aria-live="polite">{t('pages.contact.success')}</div>
   <div class="text-red-500 dark:text-red-400 font-semibold text-sm hidden" id="contact-error" role="alert" aria-live="assertive">{t('labels.generic-error')}</div>
 </form>

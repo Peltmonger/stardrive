@@ -11,7 +11,7 @@ const { locale } = Astro.props as Props;
 const t = useTranslations(locale);
 ---
 
-<div class="bg-stone-50 dark:bg-black text-text dark:text-text-dark border-t border-stone-300 dark:border-stone-800">
+<div id="newsletter-banner" class="bg-stone-50 dark:bg-black text-text dark:text-text-dark border-t border-stone-300 dark:border-stone-800">
   <div class="container py-8 relative overflow-clip">
     <div class="flex flex-col lg:flex-row items-center justify-end gap-6 xl:gap-8">
       <h3 class="text-xl font-bold sm:text-2xl text-center p-0">{t('labels.subscribe')}</h3>

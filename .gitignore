@@ -1,7 +1,7 @@
 # Tmp framework files
 .astro
 .wrangler
-.ai/AGENT_MODE.md
+.ai/STARDRIVE_AGENT_MODE.md
 
 # Lock files
 package-lock.json
