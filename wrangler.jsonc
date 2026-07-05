@@ -7,8 +7,8 @@
     "directory": "./dist",
     "not_found_handling": "404-page",
     "run_worker_first": [
-      "*/events/detail/*",
-      "*/integration/*/*"
+      "/events/detail/*",
+      "/integration/*/*"
     ]
   },
   "workers_dev": false,
