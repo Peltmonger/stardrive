@@ -1,5 +1,4 @@
 @reference "./tailwind.config.css";
-@import './markdown.css';
 
 @layer utilities {
   img#title-image {
