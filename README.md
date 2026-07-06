@@ -312,7 +312,7 @@ Third, some things are configurable via env variables at build time.
 
 ### Step by Step Guide
 
-1. If you did not use the `create stardrive` command to create the project, check the [Trimming Guide](./.ai/TRIMMING_GUIDE.md) to remove those features you do not need first! The guide is built for AI agents, but can also be used for manual actions.
+1. If you did not use the `create stardrive` command to create the project, check the [Trimming Guide](./.ai/TRIMMING_GUIDE.md) to remove those features you do not need first! The guide is built for AI agents, but can also be used for manual actions. At least check the `.gitignore` file and update the "# Lock files" part to match your package manager (if not using npm).
 2. Adjust the [package.json](./package.json) to reflect your project.
 3. Adjust the [README.md](./README.md) file to at least hold the name of your project as headline. This makes it easier for you to identify your project later.
 4. Replace the favicon and web-app-manifest files in ./public/. We recommend to use [realfavicongenerator.net](https://realfavicongenerator.net/) to do so. You only need to replace the image files. The webmanifest is generated dynamically based on the theme.config.ts. Mind that for the favicons, we have different ones for light vs. dark mode users (refering to their device, not the website). This makes sense for transparent or black/white icons. If you do not use this, also adjust [./src/components/head/base.astro](./src/components/head/base.astro) and drop the dark-mode icons. For the svg file, we recommend to handle light/dark mode directly in the svg code - you can check our [demo favicon.svg](./public/favicon.svg) for reference.

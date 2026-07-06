@@ -86,17 +86,26 @@ const currentYearIndex = sortedAvailableYears.indexOf(year);
 const prevYear = currentYearIndex > 0 ? sortedAvailableYears[currentYearIndex - 1] : null;
 const nextYear = currentYearIndex >= 0 && currentYearIndex < sortedAvailableYears.length - 1 ? sortedAvailableYears[currentYearIndex + 1] : null;
 const hasMultipleYears = sortedAvailableYears.length > 1;
+
+// Prokey for the subscribe Add to Calendar Button
+// This would be the Prokey of the Event Group at Add to Calendar PRO, which is set to the subscription mode.
+// If you connected the events to Add to Calendar PRO filtering for a group, this usually would be it.
+// Mind this file's copy at the [lang] folder, which is used for the localized version of this page.
+let customSubscribeProkey;
+//customSubscribeProkey = 'Place-your-key-here'; // <-- uncomment and set your Prokey here if you want to override the default behavior
+const subscribeProkey = customSubscribeProkey ? customSubscribeProkey : themeConfig.dynamicEvents?.filterBy?.group ? themeConfig.dynamicEvents.filterBy.group : undefined;
+
 ---
 
 <Layout title={t('pages.events.title') + ' ' + year} description={t('pages.events.description')} {locale}>
-  <div class="xs:items-end xs:flex-row mb-10 flex flex-col items-start justify-between gap-x-10">
-    <Headline text={t('pages.events.title')} class="grow" />
-    <div class="mb-5 flex items-center gap-3">
+  <div class="xs:items-end xs:flex-row mb-10 flex w-full flex-col items-start justify-between gap-x-10">
+    <Headline text={t('pages.events.title')} class="w-full grow" />
+    <div class="xs:w-fit mb-5 flex w-full items-center justify-between gap-5">
       {
         selectYears.length > 1 ? (
           <label class="flex items-center gap-2">
             <span class="sr-only">{t('pages.events.select-year')}</span>
-            <select id="event-year-select" class="select-primary w-auto! max-w-none! min-w-0! text-2xl font-bold">
+            <select id="event-year-select" class="select-primary w-auto! max-w-none! min-w-0! py-1.5 text-xl font-bold sm:text-2xl">
               {selectYears.map((y) => (
                 <option value={getLocaleUrl(y === currentYear ? 'events' : 'events/' + y, locale)} selected={y === year}>
                   {y}
@@ -106,6 +115,13 @@ const hasMultipleYears = sortedAvailableYears.length > 1;
           </label>
         ) : (
           <span class="p-2 text-2xl font-bold">{year}</span>
+        )
+      }
+      {
+        subscribeProkey && (
+          <button id="subscribe-to-calendar-button" data-key={subscribeProkey} class="btn-subtle group flex h-10 w-10 items-center justify-center rounded-full sm:h-12 sm:w-12">
+            <Icon name="heroicons:bell-alert" class="transform-all h-6 w-6 rotate-3 transition-transform duration-200 group-hover:rotate-20" />
+          </button>
         )
       }
     </div>
@@ -145,9 +161,19 @@ const hasMultipleYears = sortedAvailableYears.length > 1;
 </Layout>
 
 <script>
+  import { atcb_action } from 'add-to-calendar-button';
+
   const select = document.getElementById('event-year-select');
   select?.addEventListener('change', (event) => {
     const url = (event.target as HTMLSelectElement).value;
     if (url) window.location.href = url;
+  });
+
+  const subscribeButton = document.getElementById('subscribe-to-calendar-button');
+  subscribeButton?.addEventListener('click', () => {
+    const prokey = subscribeButton.getAttribute('data-key');
+    if (prokey) {
+      atcb_action({ proKey: prokey }, subscribeButton);
+    }
   });
 </script>

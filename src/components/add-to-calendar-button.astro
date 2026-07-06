@@ -20,11 +20,11 @@ import type { AddToCalendarButtonType } from 'add-to-calendar-button';
 
 interface Props {
   /** Event title. */
-  name: string;
+  name?: string;
   /** Short plain-text or limited-HTML description (see https://add-to-calendar-button.com/configuration#description). */
   description?: string;
   /** ISO date `YYYY-MM-DDTHH:MM:SSZ`. */
-  start: Date;
+  start?: Date;
   /** ISO date `YYYY-MM-DDTHH:MM:SSZ`. Defaults to `start` when omitted. */
   end?: Date;
   /** Whether it is an all-day event. */
@@ -118,10 +118,10 @@ const debug = false;
     <add-to-calendar-button
       name={name}
       description={description}
-      startDate={toDate(start)}
-      startTime={allDay ? undefined : toTime(start)}
-      endDate={toDate(end)}
-      endTime={allDay ? undefined : toTime(end)}
+      startDate={start ? toDate(start) : undefined}
+      startTime={allDay || !start ? undefined : toTime(start)}
+      endDate={end ? toDate(end) : undefined}
+      endTime={allDay || !end ? undefined : toTime(end)}
       timeZone={timeZone}
       location={location}
       options={optionsAttr}
@@ -152,7 +152,7 @@ const debug = false;
     @apply ring-primary border-stone-300 bg-stone-200 font-sans text-stone-950 shadow-none;
   }
   :global(:where(.dark, .dark *) add-to-calendar-button)::part(atcb-button) {
-    @apply dark:border-stone-100 dark:bg-stone-300;
+    @apply border-stone-400 bg-stone-800 text-white;
   }
   :global(add-to-calendar-button::part(atcb-button):hover) {
     @apply border-primary;

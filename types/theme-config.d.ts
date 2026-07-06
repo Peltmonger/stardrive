@@ -385,6 +385,15 @@ export interface ThemeConfig {
      */
     addEvents?: string;
   };
+
+  /**
+   * A custom list of features from the default boilerplate that has been removed in this projects (either via the starter tool or manually).
+   * Use this to keep track on your bigger changes.
+   * This also helps any AI agent to understand what is missing on purpose.
+   *
+   * @example ["events", "integrations", "blog"]
+   */
+  droppedFeatures?: string[];
 }
 
 /**

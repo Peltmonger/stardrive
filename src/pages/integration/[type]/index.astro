@@ -32,8 +32,8 @@ const typeDescription = t(`pages.integration-${type}.description`);
 <Layout title={typeTitle} description={typeDescription} {locale} header={{ button: { text: t('labels.more-categories'), href: getLocaleUrl('integration', locale) } }}>
   <!-- Main content -->
   <Headline text={typeTitle} class="pb-10" />
-  <div class="flex flex-col-reverse items-center md:items-start gap-10 md:flex-row">
-    <div class="md:max-w-[220px] md:block lg:max-w-3xs">
+  <div class="flex flex-col-reverse items-center gap-10 md:flex-row md:items-start">
+    <div class="md:block md:max-w-[220px] lg:max-w-3xs">
       <IntegrationList {type} {locale} />
     </div>
     <article class="min-w-0 md:grow">

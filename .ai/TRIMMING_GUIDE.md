@@ -5,7 +5,7 @@ Your task is to bring this repository to a clean starting point for the user's o
 
 This applies when the user cloned Stardrive **directly** (e.g. via `git clone`) instead of using the [`create-stardrive`](https://www.npmjs.com/package/create-stardrive) scaffolding tool. `create-stardrive` performs these removals automatically; here you do them manually.
 
-Only follow this guide on a rather new project that was not already been worked on!
+This guide should only be executed as part of the official initial [configuration](./CONFIG_GUIDE.md)!
 
 ## How to execute
 
@@ -15,6 +15,7 @@ Only follow this guide on a rather new project that was not already been worked 
 4. When deleting a file or directory, verify it exists first. Mind that all paths are based on the project root, where the package.json is located. If an element is already gone, report it and continue rather than failing.
 5. After removals, complete the navigation cleanup and any dependency uninstall that corresponds to what was removed.
 6. Do not commit changes unless the user asks.
+7. Note down any features dropped in the [`theme.config.ts`](../theme.config.ts) under the key "droppedFeatures" (Array of Strings) to keep track on it.
 
 ### Context you can share with the user
 
@@ -134,7 +135,13 @@ Finally, uninstall the dependencies:
 npm un @astrojs/cloudflare wrangler
 ```
 
-## Step 8 - Verify, then delete this guide (always)
+## Step 8 - Adjust .gitignore to used package manager
+
+The `.gitignore` file includes a block "# Lock files". This ignores lock files for the package managers not used.
+Adjust this block, if you are not using npm.
+
+## Step 9 - Verify, then delete this guide (always)
 
 1. After all edits, verify the project still builds/type-checks cleanly (e.g. run the dev server or build) and fix any references left dangling by the removals.
-2. **Delete this `TRIMMING_GUIDE.md` file.** It is only relevant for initial setup and must not ship with the user's website.
+2. Verify you noted any dropped features in the `theme.config.ts`file.
+3. **Delete this `TRIMMING_GUIDE.md` file.** It is only relevant for initial setup and must not ship with the user's website.

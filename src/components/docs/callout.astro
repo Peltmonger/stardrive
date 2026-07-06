@@ -46,7 +46,7 @@ const variants: Record<Variant, { icon: string; box: string; iconWrap: string }>
 const style = variants[variant];
 ---
 
-<div class:list={['flex gap-3 rounded-lg border p-4 mt-5', style.box, className]} role="note">
+<div class:list={['mt-5 flex gap-3 rounded-lg border p-4', style.box, className]} role="note">
   <span class:list={['mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md', style.iconWrap]}>
     <Icon name={style.icon} class="h-5 w-5" aria-hidden="true" />
   </span>

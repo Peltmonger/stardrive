@@ -126,11 +126,7 @@ const t = useTranslations(locale);
       // Skip rebuild if neither the unit width nor the viewport width changed
       // since the last build. This is the key fix for the mobile scroll jump:
       // URL-bar show/hide fires resize but does not change these widths.
-      if (
-        unitWidth === lastUnitWidth &&
-        viewportWidth === lastViewportWidth &&
-        track.children.length > 0
-      ) {
+      if (unitWidth === lastUnitWidth && viewportWidth === lastViewportWidth && track.children.length > 0) {
         return;
       }
       lastUnitWidth = unitWidth;
