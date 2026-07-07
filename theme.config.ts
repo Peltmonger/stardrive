@@ -67,8 +67,8 @@ export const themeConfig: ThemeConfig = {
 
   // md(x) code block rendering
   expressiveCodeThemes: {
-    light: 'github-light',
-    dark: 'github-dark',
+    light: 'min-light',
+    dark: 'min-dark',
   },
 
   // content/article settings

@@ -6,7 +6,6 @@ import References from "@components/layout/references.astro";
 import { themeConfig } from '~/theme.config';
 import { useTranslations, getLocaleUrl } from "@utils/i18n";
 import promoVideoThumbnail from "@images/promo-video-thumbnail.jpg";
-import { Code } from "astro-expressive-code/components";
 
 interface Props {
   locale: string;
@@ -53,7 +52,6 @@ const stars3 = generateStars(22);  // 3 px - few bright
           <Icon name="heroicons:arrow-right" class="mr-1 ml-0 h-4 w-4 transition-all duration-200 group-hover:mr-0 group-hover:ml-1" />
         </a>
       </div>
-      <Code code="npm create stardrive@latest" lang='sh' frame="none" class="hidden md:block" />
     </div>
 
     <div class="promo-video card-glow-light relative mt-16 aspect-video w-full max-w-4xl overflow-hidden rounded-3xl border-4 border-white/20 bg-white/3 backdrop-blur" aria-label={t('labels.get-started') + ': npm create stardrive@latest'}>

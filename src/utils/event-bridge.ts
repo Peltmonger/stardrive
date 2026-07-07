@@ -214,12 +214,39 @@ const singleEventToEntry = (event: ApiSingleEvent, locale: string, slug: string,
   } as unknown as BridgeEventEntry;
 };
 
-/** Remove HTML tags for use as a plain-text description. */
-const stripHtml = (html: string): string =>
-  html
-    .replace(/<[^>]+>/g, '')
-    .replace(/\s+/g, ' ')
-    .trim();
+/**
+ * Remove HTML tags for use as a plain-text description.
+ *
+ * Implemented as a character walk rather than a single regex so that nested/broken
+ * tag sequences (e.g. `<scr<script>ipt>`) cannot reassemble into a surviving tag
+ * after a single pass — which is what CodeQL's incomplete-sanitization rule flags.
+ * Common HTML entities are decoded first so the resulting plain text reads correctly.
+ */
+const stripHtml = (html: string): string => {
+  const decoded = html
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&apos;/g, "'")
+    .replace(/&nbsp;/g, ' ');
+
+  let out = '';
+  let inTag = false;
+  for (const ch of decoded) {
+    if (ch === '<') {
+      inTag = true;
+      continue;
+    }
+    if (inTag) {
+      if (ch === '>') inTag = false;
+      continue;
+    }
+    out += ch;
+  }
+  return out.replace(/\s+/g, ' ').trim();
+};
 
 // ---------------------------------------------------------------------------
 // Caching (per build/request lifetime)
