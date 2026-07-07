@@ -6,7 +6,7 @@ It only guides on the most important steps and order of things. You might want t
 Use it to build a `PLAN.md`, then keep it as reference. Create the `PLAN.md` in the same folder (./.ai) as the `CONFIG_GUIDE` (this file).
 Interview the user wherever a choice is ambiguous.
 
-1. **Trim first.** If the project was cloned directly (not via `npm create stardrive`), follow [TRIMMING_GUIDE.md](./TRIMMING_GUIDE.md) to remove unused/demo features. With `npm create stardrive` or if already done, the TRIMMING_GUIDE.md would no longer be there.
+1. **Trim first.** If the project was cloned directly (not via `npm create stardrive@latest`), follow [TRIMMING_GUIDE.md](./TRIMMING_GUIDE.md) to remove unused/demo features. With `npm create stardrive` or if already done, the TRIMMING_GUIDE.md would no longer be there. In the `npm create stardrive@latest` case, mind that `npm run check` would find some issues as we are intentionally not cleaning up everything in order to have some functionality still in place, if the project, for example, establishes new content collections. Use the `npm run check` findings to clean up manually.
 2. **`package.json`** - update name, description, metadata to reflect the project.
 3. **`README.md`** - at minimum set the project name as the headline (for easy identification later).
 4. **Favicons** - see [FAVICON_GUIDE.md](./FAVICON_GUIDE.md) for instructions.

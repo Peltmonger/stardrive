@@ -5,7 +5,11 @@ import { themeConfig } from '~/theme.config';
 // Astro forbids rewriting from a server route to a prerendered one.
 // Once we are here, we can redirect to the prerendered 404 page. This gives us both cases - dynamic and static 404 fallback.
 // Even this page, if SSR fails, would implicitly redirect to the static 404 then.
-export const prerender = false;
+//
+// `prerender` is intentionally NOT set to `false` here. Astro v5+ only accepts a static `true`/`false`,
+// so we flip this route to SSR via the `setOnDemandPrerender` integration in `src/utils/on-demand-render.ts` —
+// but only when at least one collection is on-demand rendered (or events are pulled from the API).
+// This keeps the build fully static (no adapter required) when nothing is on-demand rendered.
 
 const defaultLocale = themeConfig.i18n.defaultLocale;
 // Parse locale from the ORIGINAL request path (not Astro.url, which is /404_dynamic after the rewrite).

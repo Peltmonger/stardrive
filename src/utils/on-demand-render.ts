@@ -20,6 +20,11 @@ const onDemandRoutes: Record<string, string> = {
   'integration/[type]/index.astro': 'integration_options',
   // Dynamic events sitemap - only SSR when events are pulled from the API.
   'dynamic-events-sitemap.xml.ts': 'dynamic_events_sitemap',
+  // Dynamic 404 fallback - only SSR when at least one collection is on-demand
+  // rendered (or events are pulled from the API), so on-demand routes can
+  // `Astro.rewrite('/404_dynamic')`. Stays prerendered otherwise to keep the
+  // build fully static (no server adapter required).
+  '404_dynamic.astro': '404_dynamic',
 };
 const onDemandCollections = new Set<string>(themeConfig.onDemandRenderedCollections ?? []);
 export const setOnDemandPrerender: AstroIntegration = {
@@ -33,6 +38,12 @@ export const setOnDemandPrerender: AstroIntegration = {
       // The events overview list is prerendered for markdown events but must be SSR when events come from the API so new entries appear without a rebuild.
       if (collection === 'events_overview' || collection === 'dynamic_events_sitemap') {
         if (dynamicEvents) route.prerender = false;
+        return;
+      }
+      // The dynamic 404 fallback is only needed (and only SSR) when at least
+      // one collection is on-demand rendered or events come from the API.
+      if (collection === '404_dynamic') {
+        if (onDemandCollections.size > 0 || dynamicEvents) route.prerender = false;
         return;
       }
       if (collection && (onDemandCollections.has(collection) || (collection === 'events' && dynamicEvents))) {
