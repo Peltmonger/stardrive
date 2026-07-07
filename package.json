@@ -1,6 +1,7 @@
 {
   "name": "stardrive",
   "version": "0.2.0",
+  "stardriveVersion": "0.2.0",
   "private": true,
   "description": "The Astro boilerplate to create super stable and fast websites in the AI age",
   "engines": {

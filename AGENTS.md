@@ -86,6 +86,7 @@ They extend any existing general Agent guidelines, profiles, or skills.
   2. Would it be <50 lines with VanillaJS?
   3. Ask the user whether React, Vue, Svelte, or SolidJS is prefered for more complex things.
 - Some core features might have been dropped (either via the starter tool, manually, or by an AI agent). Those changes might have been noted down in the [`theme.config.ts`](./theme.config.ts) file. If you plan to build such features, look at the official repository first to revert to the default functionality first by copying the dropped files from there. To identify the removed files, check the `TRIMMING_GUIDE.md` in the `./.a/` directory at the remote repository (it most probably already got deleted in this local clone). Ask the user whether this is something he would prefer instead of building from scratch.
+- In case you want to upgrade the Astro Stardrive boilerplate, you can manually check the changes at the [official repository's releases](https://github.com/Peltmonger/stardrive/releases) and compare it to the local version. The local Stardrive version is pinned in the package.json under the key `stardriveVersion`. Update this number after your manual upgrade as well.
 - Before implementing:
   - State your assumptions explicitly. If uncertain, ask.
   - If multiple interpretations exist, present them - don't pick silently.

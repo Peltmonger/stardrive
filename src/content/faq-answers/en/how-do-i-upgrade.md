@@ -16,3 +16,5 @@ In this case, you would need to do it manually, by comparing any [changes](https
 In most cases, you do not necessarily need to upgrade the Stardrive version, but simply need to upgrade the underlying Astro package.
 
 Run `npx @astrojs/upgrade` to do so. Mind that this also can come with some manual tasks. Mind the [official Astro docs](https://docs.astro.build/en/upgrade-astro/) for changelogs and migration guides.
+
+> **Note:** The local Stardrive version is pinned in the `package.json` under the `stardriveVersion` key. When checking for changes, compare the [release notes in the GitHub repository](https://github.com/Peltmonger/stardrive/releases) against the state of your local version to see what has changed since.
