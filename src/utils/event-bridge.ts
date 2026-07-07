@@ -223,14 +223,21 @@ const singleEventToEntry = (event: ApiSingleEvent, locale: string, slug: string,
  * Common HTML entities are decoded first so the resulting plain text reads correctly.
  */
 const stripHtml = (html: string): string => {
-  const decoded = html
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&apos;/g, "'")
-    .replace(/&nbsp;/g, ' ');
+  // Single-pass entity decode: one regex sweep with a lookup map so each input
+  // character is processed exactly once (avoids double-unescape where decoding
+  // `&amp;` first could synthesize a new entity like `&lt;` from `&amp;lt;`).
+  const entities: Record<string, string> = {
+    amp: '&',
+    lt: '<',
+    gt: '>',
+    quot: '"',
+    apos: "'",
+    nbsp: ' ',
+  };
+  const decoded = html.replace(/&(amp|lt|gt|quot|apos|nbsp|#39);/g, (match, name) => {
+    if (name === '#39') return "'";
+    return entities[name as string] ?? match;
+  });
 
   let out = '';
   let inTag = false;
