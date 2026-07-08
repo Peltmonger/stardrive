@@ -190,13 +190,11 @@ const t = useTranslations(locale);
     });
   }
 
-  // Initialize as early as possible without blocking the main thread.
-  // requestIdleCallback defers the work to an idle period; fall back to
-  // setTimeout(0) on browsers that don't support it (e.g. Safari < 17).
-  const scheduleInit =
-    typeof window.requestIdleCallback === 'function'
-      ? (fn: () => void) => window.requestIdleCallback(fn, { timeout: 200 })
-      : (fn: () => void) => window.setTimeout(fn, 0);
+  // Initialize before the next paint so the marquee is visible immediately,
+  // without blocking the current script/module evaluation. rAF is reliable
+  // on mobile (unlike requestIdleCallback, which mobile browsers heavily
+  // throttle during page load).
+  const scheduleInit = (fn: () => void) => window.requestAnimationFrame(fn);
 
   scheduleInit(initMarquees);
   document.addEventListener('astro:page-load', () => scheduleInit(initMarquees));

@@ -1,7 +1,7 @@
 {
   "name": "stardrive",
-  "version": "1.0.2",
-  "stardriveVersion": "1.0.2",
+  "version": "1.0.3",
+  "stardriveVersion": "1.0.3",
   "private": true,
   "description": "The Astro boilerplate to create super stable and fast websites in the AI age",
   "engines": {
@@ -73,7 +73,7 @@
     "protomaps-leaflet": "^5.1.0",
     "slot-text": "^0.3.2",
     "tailwindcss": "^4.3.2",
-    "wrangler": "^4.107.1"
+    "wrangler": "^4.108.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
