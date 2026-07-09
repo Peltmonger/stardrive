@@ -45,6 +45,6 @@ const isImage = (element: Element) => element.tagName == 'img' && element.proper
 
 const setExternalLink = (element: Element) => {
   element.properties.target = '_blank';
-  element.properties.rel = 'noopener';
+  element.properties.rel = ['noopener'];
   element.properties.class = 'external-link';
 };
