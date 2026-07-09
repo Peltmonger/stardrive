@@ -1,7 +1,7 @@
 {
   "name": "stardrive",
-  "version": "1.0.4",
-  "stardriveVersion": "1.0.4",
+  "version": "1.1.0",
+  "stardriveVersion": "1.1.0",
   "private": true,
   "description": "The Astro boilerplate to create super stable and fast websites in the AI age",
   "engines": {
@@ -59,21 +59,22 @@
   },
   "homepage": "https://astro-stardrive.com/",
   "dependencies": {
-    "@astrojs/cloudflare": "^14.1.1",
+    "@astrojs/cloudflare": "^14.1.2",
     "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.3",
     "@fontsource/geist": "^5.2.9",
     "@tailwindcss/vite": "^4.3.2",
     "add-to-calendar-button": "^2.15.0",
-    "astro": "^7.0.6",
+    "astro": "^7.0.7",
     "astro-expressive-code": "^0.44.0",
     "astro-icon": "^1.1.5",
     "leaflet": "^1.9.4",
     "pmtiles": "^4.4.1",
     "protomaps-leaflet": "^5.1.0",
-    "slot-text": "^0.3.2",
+    "sanitize-html": "^2.17.5",
+    "slot-text": "^0.3.3",
     "tailwindcss": "^4.3.2",
-    "wrangler": "^4.108.0"
+    "wrangler": "^4.110.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
@@ -84,6 +85,7 @@
     "@iconify-json/fa6-brands": "^1.2.6",
     "@iconify-json/heroicons": "^1.2.3",
     "@types/leaflet": "^1.9.21",
+    "@types/sanitize-html": "^2.16.1",
     "@typescript-eslint/parser": "^8.63.0",
     "astro-compress": "^2.4.1",
     "astro-eslint-parser": "^2.1.0",
@@ -99,7 +101,7 @@
     "mdast-util-from-markdown": "^2.0.3",
     "mdast-util-to-string": "^4.0.0",
     "path": "^0.12.7",
-    "prettier": "^3.9.4",
+    "prettier": "^3.9.5",
     "prettier-plugin-astro": "^0.14.1",
     "prettier-plugin-tailwindcss": "^0.8.0",
     "reading-time": "^1.5.0",

@@ -2,6 +2,7 @@
 import type { CollectionEntry } from "astro:content";
 import { themeConfig } from '~/theme.config';
 import { getCleanLocaleUrl } from "@utils/i18n";
+import { toSafeJsonScript } from "@utils/security";
 
 interface Props {
   title: string;
@@ -55,4 +56,4 @@ const structuredData = {
 }
 ---
 
-<script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+<script is:inline type="application/ld+json" set:html={toSafeJsonScript(structuredData)} />

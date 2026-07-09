@@ -11,6 +11,7 @@
 import { getCollection } from "astro:content";
 import { collections } from "@/content.config";
 import { useTranslations, getLocaleUrl } from "@utils/i18n";
+import { toSafeJsonScript } from "@utils/security";
 import { themeConfig } from "~/theme.config";
 
 interface Props {
@@ -138,7 +139,7 @@ const payload = hasAnyTool ? { blog, faq, labels } : null;
 
 <div data-has-tools={`${hasAnyTool}`} class="hidden"></div>
 
-<script type="application/json" id="webmcp-data" is:inline set:html={JSON.stringify(payload)} />
+<script type="application/json" id="webmcp-data" is:inline set:html={toSafeJsonScript(payload)} />
 
 <script>
   interface TaggedItem {

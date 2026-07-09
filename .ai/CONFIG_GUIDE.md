@@ -31,6 +31,8 @@ Interview the user wherever a choice is ambiguous.
 11. **Open Graph / X meta** - review and extend [ogx.astro](../src/components/head/ogx.astro).
 12. **Page structure** - shape `./src/pages/` to your routes (one file per page, can start empty). For >1 language: string-translated pages go in `[lang]/`; content-heavy / per-language pages go in explicit subfolders (`de/`, `es/`, ...) with hard-coded text.
 13. **Rendering mode** - static SSG by default and as Astro best practice. Some dynamic collections opt out via `theme.config.ts` to demo how to deal with extremely large content collections. Adjust if a static export is required or if SSR makes sense for other content collections as well.
+    - Security note: Any content loaded from an external CMS/API is untrusted. Sanitize rich HTML with `sanitizeTrustedHtmlFragment` before rendering it with `set:html` or a Markdown renderer, and use `toSafeJsonScript` for JSON embedded inside `<script>` elements. Do not rely on the CSP as the only XSS protection because Stardrive intentionally keeps inline scripts enabled for
+      compatibility.
 14. **Navigation** - edit `./src/components/layout/nav`.
 15. **Layout** - review `./src/layouts` and `./src/components/layout`; match the site's general layout.
 16. **i18n strings** - update the JSON files in `./src/i18n/` as you build the layout.

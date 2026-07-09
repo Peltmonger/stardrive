@@ -1,5 +1,6 @@
 ---
 import { getCleanLocaleUrl } from "@utils/i18n";
+import { toSafeJsonScript } from "@utils/security";
 import { themeConfig } from '~/theme.config';
 
 interface Props {
@@ -43,4 +44,4 @@ const structuredData = {
 }
 ---
 
-<script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+<script is:inline type="application/ld+json" set:html={toSafeJsonScript(structuredData)} />

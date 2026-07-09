@@ -1,5 +1,6 @@
 import { getCollection, getEntry } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
+import { sanitizeTrustedHtmlFragment } from '@utils/security';
 import { themeConfig } from '~/theme.config';
 
 /**
@@ -70,7 +71,7 @@ interface ApiSingleEvent {
 export type BridgeEventEntry = EventEntry & {
   /** `true` when the entry originates from the Add to Calendar PRO API. */
   dynamic?: boolean;
-  /** Pre-rendered (sanitized-by-source) HTML body for dynamic events. */
+  /** Sanitized HTML body for dynamic events. */
   bodyHtml?: string;
   /** Add to Calendar PRO prokey the entry was derived from (API events only). */
   prokey?: string;
@@ -208,7 +209,7 @@ const singleEventToEntry = (event: ApiSingleEvent, locale: string, slug: string,
       icsFile: `https://event.caldn.net/${event.prokey}/event.ics`,
     },
     dynamic: true,
-    bodyHtml: date.description ?? '',
+    bodyHtml: sanitizeTrustedHtmlFragment(date.description ?? ''),
     prokey: event.prokey,
     dateIndex,
   } as unknown as BridgeEventEntry;

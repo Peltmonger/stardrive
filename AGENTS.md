@@ -93,7 +93,7 @@ They extend any existing general Agent guidelines, profiles, or skills.
   - If a simpler approach exists, say so. Push back when warranted.
   - If something is unclear, stop. Name what's confusing. Ask.
 - Simplicity First. Minimum code that solves the problem. Nothing speculative. When working on a new project, try to stay as close as possible to what the boilerplate ships with - this also applies to structure.
-- Styling: follow the same conventions and patterns that you detect in the surrounding code. Run `npm run check` to check and lint everyting or pick a more specific linter.
+- Styling: follow the same conventions and patterns that you detect in the surrounding code. Run `npm run check` to check and lint everything or pick a more specific linter. Run `npm run fix` to fix everything (astro, eslint, prettier) or pick a more specific script.
 
 ## Deciding: component vs. inline in the page
 

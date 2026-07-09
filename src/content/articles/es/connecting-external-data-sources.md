@@ -66,6 +66,8 @@ Luego úsalo en tu página o en un content loader. Mapea los campos de Directus 
 
 > Consejo: mantén tus variables de entorno en `.env` y nunca las commitees. Astro es un framework frontend - no metas secretos en código del lado del cliente.
 
+> Consejo de seguridad: trata el contenido externo de un CMS como no confiable. Sanitiza cualquier HTML que no venga de commits confiables del repositorio antes de renderizarlo con `set:html` o con un renderizador Markdown. Stardrive expone `sanitizeTrustedHtmlFragment` desde `src/utils/security.ts` para fragmentos HTML enriquecidos y usa el mismo patrón para las descripciones dinámicas de eventos de Add to Calendar PRO.
+
 ### 4. Reconstruir ante cambios
 
 Esta es la parte que la gente olvida. Como Astro es estático por defecto, un cambio de contenido en Directus no aparece en tu sitio hasta que reconstruyes.

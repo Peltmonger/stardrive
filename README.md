@@ -26,14 +26,6 @@ We recommend deploying on Cloudflare as Astro and Stardrive are optimized for th
 
 <br />
 
-> [!WARNING]
-> Mind Astro's frontend nature!
-> Astro is a frontend framework. This means it runs as a static site on the client side.
-> Do never add any sensitive information here! Any backend data needs to be processed by a respective backend service.
-> While there are things that can act as a backend service (mainly Astro's on-demand server-side rendering, optionally combined with Middleware), it still is a frontend framework.
-
-<br />
-
 ---
 
 <br />
@@ -191,7 +183,9 @@ The code structure follows the official Astro scheme. It is recommended to rathe
 A clear exception is the component directory. There, we rather keep the amount of files low than splitting everything into atoms.
 Adjust this based on your project, personal taste, and coding guidelines!
 
-```
+<details>
+<summary>Click here to open</summary>
+<pre>
 .
 ├── astro.config.ts              # Base Astro config (integrations, build, adapter)
 ├── theme.config.ts              # 🎯 Central project config: branding, i18n, blog, promo, llms.txt
@@ -281,7 +275,10 @@ Adjust this based on your project, personal taste, and coding guidelines!
     │   └── markdown.css          # Styling for rendered markdown pages
     │
     └── utils/                    # Helpers
-```
+</pre>
+</details>
+
+<br />
 
 ---
 
@@ -310,6 +307,8 @@ Third, some things are configurable via env variables at build time.
 <br />
 
 ### Step by Step Guide
+
+We have created a step by step guide, so you do not miss anything.
 
 1. If you did not use the `create stardrive@latest` command to create the project, check the [Trimming Guide](./.ai/TRIMMING_GUIDE.md) to remove those features you do not need first! The guide is built for AI agents, but can also be used for manual actions. At least check the `.gitignore` file and update the "# Lock files" part to match your package manager (if not using npm). If you went for `create stardrive@latest` case, mind that `npm run check` would find some issues. We are intentionally not cleaning up everything in order to have some functionality still in place, if the project, for example, establishes new content collections. Use the `npm run check` findings to clean up manually.
 2. Adjust the [package.json](./package.json) to reflect your project.
@@ -357,6 +356,11 @@ Third, some things are configurable via env variables at build time.
 
 <br />
 
+> [!TIP]
+> Find this guide in a more interactive style at our demo page!
+
+<br />
+
 ### Additional things you might want to check
 
 1. Check the [astro.config.ts](./astro.config.ts) file. It holds the base Astro configuration. Theoretically, you do not need to touch it, if your project is close to the boilerplate. See the [official Astro docs](https://astro.build/config) for more information on what you can set up there.
@@ -364,6 +368,14 @@ Third, some things are configurable via env variables at build time.
 3. The [webmcp-tools.astro](./src/components/webmcp-tools.astro) presents some basic tools to the new concept of [WebMCP](https://astro-stardrive.com/blog/webmcp-introduction). This is rather experimental and acts as base and inspiration. Extend it to your needs, if you want.
 4. Adjus the ESLint, Typescript, and Prettier rules, if you have special needs here and do not like the default.
 5. In [astro.config.ts](./astro.config.ts), we explicitly disabled the session functionality, so the page can be easier deployed. Check it, if you require session handling.
+
+<br />
+
+> [!WARNING]
+> Mind Astro's frontend nature!
+> Astro is a frontend framework. This means it runs as a static site on the client side.
+> Do never add any sensitive information here! Any backend data needs to be processed by a respective backend service.
+> While there are things that can act as a backend service (mainly Astro's on-demand server-side rendering, optionally combined with Middleware), it still is a frontend framework.
 
 <br />
 
