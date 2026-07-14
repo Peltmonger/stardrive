@@ -147,5 +147,5 @@ export const themeConfig: ThemeConfig = {
     addFAQ: 'all',
   },
 
-  askAiTrigger: 'I am evaluating the Astro Stardrive boilerplate (github.com/Peltmonger/stardrive) for my website. Provide a detailed analysis of its features, strengths, and weaknesses. Can you help me using it? How do I get started?',
+  askAiTrigger: 'I am evaluating the Astro Stardrive boilerplate (github.com/peltmonger/stardrive) for my website. Provide a detailed analysis of its features, strengths, and weaknesses. Can you help me using it? How do I get started?',
 };

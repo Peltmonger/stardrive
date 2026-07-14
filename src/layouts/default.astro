@@ -102,7 +102,7 @@ const showTopBanner = (themeConfig.promotions?.topBanner && header?.showTopBanne
     <div class="relative w-full">
       {
         header?.hidden !== true && (
-          <Header {locale} button={header?.button ?? undefined} github="https://github.com/Peltmonger/stardrive" ctaButton={{ text: t('labels.signup'), href: getLocaleUrl('signup', locale) }} {isHome} fixed={header?.fixed} overlay={header?.overlay} overlayTheme="dark" scrollDownThreshold={header?.scrollDownThreshold} closeIcon={header?.closeIcon} hasTopBanner={showTopBanner} />
+          <Header {locale} button={header?.button ?? undefined} github="https://github.com/peltmonger/stardrive" ctaButton={{ text: t('labels.signup'), href: getLocaleUrl('signup', locale) }} {isHome} fixed={header?.fixed} overlay={header?.overlay} overlayTheme="dark" scrollDownThreshold={header?.scrollDownThreshold} closeIcon={header?.closeIcon} hasTopBanner={showTopBanner} />
         )
       }
       <main role="main" class="relative z-40">

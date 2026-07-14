@@ -389,7 +389,7 @@ export interface ThemeConfig {
   /**
    * Optional question that gets submitted to AI agents when clicking on respective buttons in the UI.
    *
-   * @example "I am evaluating the Astro Stardrive boilerplate (github.com/Peltmonger/stardrive) for my website. Provide a detailed analysis of its features, strengths, and weaknesses. Can you help me using it? How do I get started?"
+   * @example "I am evaluating the Astro Stardrive boilerplate (github.com/peltmonger/stardrive) for my website. Provide a detailed analysis of its features, strengths, and weaknesses. Can you help me using it? How do I get started?"
    */
   askAiTrigger?: string;
 

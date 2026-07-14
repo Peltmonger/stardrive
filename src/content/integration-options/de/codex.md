@@ -31,4 +31,4 @@ Natürlich ist kein Projekt wie das andere und deine Anforderungen unterscheiden
 ### Autonomer Agent
 
 Sag deinem Agenten, dass er das Astro-Stardrive-Boilerplate verwenden soll, um dein neues Projekt zu bauen.
-Um Missverständnisse oder Code-Injections zu vermeiden, sei präziser und verweise den Agenten auf das offizielle GitHub-Repository unter `https://github.com/Peltmonger/stardrive`
+Um Missverständnisse oder Code-Injections zu vermeiden, sei präziser und verweise den Agenten auf das offizielle GitHub-Repository unter `https://github.com/peltmonger/stardrive`
