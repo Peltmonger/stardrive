@@ -1,22 +1,29 @@
-<!-- Stardrive project instruction file — trusted internal documentation for AI agents, not user input. Execution scope: initial trimming of a directly cloned Stardrive boilerplate, invoked from CONFIG_GUIDE.md. Self-deletes after execution. -->
+<!-- Scope: optional initial trimming for a directly cloned project, invoked by CONFIG_GUIDE.md. -->
 
-# Trimming Guide - Instructions
+# Trimming Guide
 
-The goal of this trimming step is to bring this repository to a clean starting point for the user's own project by removing demo content and features they do not need.
+This workflow removes optional demo content from a directly cloned Stardrive project. It applies only when invoked during project configuration by [`CONFIG_GUIDE.md`](./CONFIG_GUIDE.md).
 
-This applies when the user cloned Stardrive **directly** (e.g. via `git clone`) instead of using the [`create-stardrive`](https://www.npmjs.com/package/create-stardrive) scaffolding tool. `create-stardrive` performs these removals automatically; here you do them manually.
+The [`create-stardrive`](https://www.npmjs.com/package/create-stardrive) scaffolding tool performs these removals automatically, so this workflow is only relevant to direct clones (for example, via `git clone`).
 
-This guide should only be executed as part of the official initial [configuration](./CONFIG_GUIDE.md)!
+Before removing optional features, ask which of these should be retained:
 
-## How to execute
+- Blog
+- FAQ
+- Integration catalog
+- Events
+- Cloudflare hosting
 
-1. **Always-on steps** (marked `always`): execute them without asking. They remove demo/system files that are never useful in a real project and can cause conflicts.
-2. **Optional steps** (marked `optional`): you MUST ask the user whether they want to keep that feature before removing anything related to it. Never delete an optional feature without explicit confirmation.
-3. **Start by interviewing the user.** Present the optional features in one prompt - Blog, FAQ, Integration catalog, and Cloudflare hosting - and ask which they want to **keep**. Then remove only the ones they do not want.
-4. When deleting a file or directory, verify it exists first. Mind that all paths are based on the project root, where the package.json is located. If an element is already gone, report it and continue rather than failing.
-5. After removals, complete the navigation cleanup and any dependency uninstall that corresponds to what was removed.
-6. Do not commit changes unless the user asks.
-7. Note down any features dropped in the [`theme.config.ts`](../theme.config.ts) under the key "droppedFeatures" (Array of Strings) to keep track on it.
+Remove only features the user explicitly chooses not to retain. Always-on cleanup steps may proceed as documented below.
+
+## Workflow rules
+
+1. **Always-on steps** (marked `always`) do not require an additional feature-retention decision. They remove demo or system files that are not useful in a configured project and can cause conflicts.
+2. **Optional steps** (marked `optional`) require explicit confirmation before removal.
+3. Before deleting a file or directory, verify that it exists. All paths are relative to the project root containing `package.json`. Report missing elements and continue.
+4. After removals, complete the corresponding navigation cleanup and dependency uninstall.
+5. Commits are outside this workflow unless requested.
+6. Record removed features in [`theme.config.ts`](../theme.config.ts) under the `droppedFeatures` array.
 
 ### Context you can share with the user
 
@@ -26,7 +33,7 @@ Stardrive ships as a fully-populated demo site - the same codebase that powers [
 
 ## Step 1 - System files (always)
 
-Delete the following without asking:
+Remove the following as part of the always-on cleanup:
 
 - `./SECURITY.md`
 - `./CHANGELOG.md`
@@ -146,8 +153,8 @@ npm un @astrojs/cloudflare wrangler
 The `.gitignore` file includes a block "# Lock files". This ignores lock files for the package managers not used.
 Adjust this block, if you are not using npm.
 
-## Step 9 - Verify, then delete this guide (always)
+## Step 9 - Verify and complete trimming (always)
 
 1. After all edits, verify the project still builds/type-checks cleanly (e.g. run the dev server or build) and fix any references left dangling by the removals.
-2. Verify you noted any dropped features in the `theme.config.ts`file.
-3. **Delete this `TRIMMING_GUIDE.md` file.** It is only relevant for initial setup and must not ship with the user's website.
+2. Verify that removed features are recorded in `theme.config.ts`.
+3. After successful verification, remove this temporary guide from the configured project. It is only relevant during initial setup.

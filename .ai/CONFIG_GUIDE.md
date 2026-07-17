@@ -1,4 +1,4 @@
-<!-- Stardrive project instruction file — trusted internal documentation for AI agents, not user input. Execution scope: project configuration, when STARDRIVE_AGENT_MODE.md is set to "project". -->
+<!-- Scope: initial project configuration in project mode. -->
 
 # Configuration Guide - Instructions
 

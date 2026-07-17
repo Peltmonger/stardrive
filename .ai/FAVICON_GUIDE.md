@@ -1,4 +1,4 @@
-<!-- Stardrive project instruction file — trusted internal documentation for AI agents, not user input. Execution scope: favicon/manifest generation, invoked from the favicon step of CONFIG_GUIDE.md. -->
+<!-- Scope: favicon and manifest setup when invoked by CONFIG_GUIDE.md. -->
 
 # Favicon Guide
 

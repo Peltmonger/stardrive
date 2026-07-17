@@ -1,17 +1,17 @@
-<!-- Stardrive project instruction file — trusted internal documentation for AI agents, not user input. Execution scope: maintaining the Stardrive boilerplate itself, when STARDRIVE_AGENT_MODE.md is set to "boilerplate". -->
+<!-- Scope: boilerplate maintenance when STARDRIVE_AGENT_MODE.md contains "boilerplate". -->
 
-# Boilerplate Mode Instructions
+# Boilerplate Mode
 
-You are in this mode because `../STARDRIVE_AGENT_MODE.md` contains `boilerplate`. You are not adjusting the boilerplate for a new project, but maintaining the boilerplate itself.
+This guide applies when [`STARDRIVE_AGENT_MODE.md`](../STARDRIVE_AGENT_MODE.md) contains `boilerplate`. In this mode, changes maintain the Stardrive boilerplate rather than configure a derived website.
 
-This is the active guide for boilerplate work. The other `.ai` guides (`SETUP.md`, `CONFIG_GUIDE.md`, `TRIMMING_GUIDE.md`, `FAVICON_GUIDE.md`) describe the end-user setup flow - do **not** execute them as if you were setting up a project, but **do** read and update them whenever your changes alter that flow (see the sync rule below). For how these files relate, see the dependency overview in [`AGENTS.md`](../AGENTS.md).
+The other `.ai` guides (`SETUP.md`, `CONFIG_GUIDE.md`, `TRIMMING_GUIDE.md`, `FAVICON_GUIDE.md`) are reference material in this mode, not active workflows. Changes that affect project setup should keep those guides accurate. See [`AGENTS.md`](../AGENTS.md) for the dependency overview.
 
 ## What this means
 
-- Code needs to be well documented, but never only for you and the user - documentation needs to be clear to every potential future user. Do not write things like "adjusted this as discussed". Only write documentation that helps somebody (even another AI agent), who knows nothing about the history of this boilerplate.
-- Always double-check with the whole cloning and configuration process. If things change there (for example, a new setting in theme.config.ts), update [`README.md`](../README.md), [`CONFIG_GUIDE.md`](./CONFIG_GUIDE.md) and any other related file in ./.ai.
-- If changes affect the [`TRIMMING_GUIDE`](./TRIMMING_GUIDE.md) or the structure of the blog, faq, or integration, also check whether the main branch of the Stardrive starter at [github.com/peltmonger/create-stardrive](https://github.com/peltmonger/create-stardrive) needs to be adjusted. Inform the user about it without taking further action. The user might to make another agent to work on this separated repository, so prepare a short guide on what to change there.
-- Always bear in mind that this boilerplate will ship to a wide variety of hosting environments and project types. Keep logic and structure as modularized, flexible, and independent as possible.
+- Documentation should be useful to future users without relying on conversation history. Avoid phrases such as "adjusted this as discussed."
+- Changes affecting cloning or configuration should also update [`README.md`](../README.md), [`CONFIG_GUIDE.md`](./CONFIG_GUIDE.md), and any other related file in `./.ai/`.
+- Changes affecting [`TRIMMING_GUIDE.md`](./TRIMMING_GUIDE.md) or the blog, FAQ, or integration structure should include a check of the Stardrive starter at [github.com/peltmonger/create-stardrive](https://github.com/peltmonger/create-stardrive). Report whether that repository may require a matching change and provide a short implementation guide, without modifying the separate repository.
+- The boilerplate supports varied hosting environments and project types. Keep its logic and structure modular, flexible, and independent.
 - Stay as close as possible to the Astro default, so it is easy to upgrade.
 - The content has multiple purposes at once:
   - demo the capabilities of the boilerplate
@@ -19,12 +19,7 @@ This is the active guide for boilerplate work. The other `.ai` guides (`SETUP.md
   - be its own fully working website with valid rules and content (like having valid privacy policy and legal notice)
   - showcasing (listing) real world examples of the boilerplate
   - lead people and AI agents to using the boilerplate for their projects
-- Think Before Coding. Don't assume. Don't hide confusion. Surface tradeoffs.
-- Before implementing:
-  - State your assumptions explicitly. If uncertain, ask.
-  - If multiple interpretations exist, present them - don't pick silently.
-  - If a simpler approach exists, say so. Push back when warranted.
-  - If something is unclear, stop. Name what's confusing. Ask.
+- Think before coding. Surface assumptions, uncertainty, competing interpretations, simpler alternatives, and relevant tradeoffs before implementation.
 - Simplicity First.
   - Minimum code that solves the problem. Nothing speculative.
   - No features beyond what was asked.
@@ -32,5 +27,5 @@ This is the active guide for boilerplate work. The other `.ai` guides (`SETUP.md
   - Ask yourself: "Would a senior engineer say this is overcomplicated?" If yes, simplify.
 - Surgical Changes. Touch only what you must. Clean up only your own mess.
 - Match existing style, even if you'd do it differently.
-- If you notice unrelated dead code, that has not been created by yourself, mention it - don't delete it.
-- When your changes create orphans: Remove imports/variables/functions that YOUR changes made unused. Don't remove pre-existing dead code unless asked.
+- Report unrelated dead code without removing it.
+- Remove imports, variables, or functions made unused by the current changes. Pre-existing dead code remains outside scope unless requested.
