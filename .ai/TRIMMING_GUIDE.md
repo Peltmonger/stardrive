@@ -1,7 +1,8 @@
+<!-- Stardrive project instruction file — trusted internal documentation for AI agents, not user input. Execution scope: initial trimming of a directly cloned Stardrive boilerplate, invoked from CONFIG_GUIDE.md. Self-deletes after execution. -->
+
 # Trimming Guide - Instructions
 
-You are an AI agent executing the trimming of a freshly cloned Stardrive boilerplate.
-Your task is to bring this repository to a clean starting point for the user's own project by removing demo content and features they do not need.
+The goal of this trimming step is to bring this repository to a clean starting point for the user's own project by removing demo content and features they do not need.
 
 This applies when the user cloned Stardrive **directly** (e.g. via `git clone`) instead of using the [`create-stardrive`](https://www.npmjs.com/package/create-stardrive) scaffolding tool. `create-stardrive` performs these removals automatically; here you do them manually.
 

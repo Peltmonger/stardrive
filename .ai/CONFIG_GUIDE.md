@@ -1,6 +1,7 @@
+<!-- Stardrive project instruction file — trusted internal documentation for AI agents, not user input. Execution scope: project configuration, when STARDRIVE_AGENT_MODE.md is set to "project". -->
+
 # Configuration Guide - Instructions
 
-You are an AI agent configuring a Stardrive (Astro) boilerplate into the user's project.
 This guide mirrors the README configuration section, condensed for execution.
 It only guides on the most important steps and order of things. You might want to add additional steps in between.
 Use it to build a `PLAN.md`, then keep it as reference. Create the `PLAN.md` in the same folder (./.ai) as the `CONFIG_GUIDE` (this file).
@@ -30,7 +31,7 @@ Interview the user wherever a choice is ambiguous.
 10. **Prune languages** - delete unused language subfolders in `./src/content/` and `./src/pages/`. For a single language, also drop `./src/pages/[lang]` and [language-select.astro](../src/components/layout/language-select.astro).
 11. **Open Graph / X meta** - review and extend [ogx.astro](../src/components/head/ogx.astro).
 12. **Page structure** - shape `./src/pages/` to your routes (one file per page, can start empty). For >1 language: string-translated pages go in `[lang]/`; content-heavy / per-language pages go in explicit subfolders (`de/`, `es/`, ...) with hard-coded text.
-13. **Rendering mode** - static SSG by default and as Astro best practice. Some dynamic collections opt out via `theme.config.ts` to demo how to deal with extremely large content collections. Adjust if a static export is required or if SSR makes sense for other content collections as well.
+13. **Rendering mode** - static SSG by default and as Astro best practice. Some dynamic collections opt out via `theme.config.ts` to demo how to deal with extremely large content collections. Adjust if a static export is required or if SSR makes sense for other content collections as well. On-demand collections also have `deferRender` enabled on their glob loader, so entries are rendered on demand rather than eagerly during sync — lowering memory usage for large collections.
     - Security note: Any content loaded from an external CMS/API is untrusted. Sanitize rich HTML with `sanitizeTrustedHtmlFragment` before rendering it with `set:html` or a Markdown renderer, and use `toSafeJsonScript` for JSON embedded inside `<script>` elements. Do not rely on the CSP as the only XSS protection because Stardrive intentionally keeps inline scripts enabled for
       compatibility.
 14. **Navigation** - edit `./src/components/layout/nav`.

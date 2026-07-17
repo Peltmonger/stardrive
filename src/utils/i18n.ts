@@ -1,9 +1,39 @@
 import { getRelativeLocaleUrl, getAbsoluteLocaleUrl } from 'astro:i18n';
 import { themeConfig } from '~/theme.config';
 import { getCollection, getEntry } from 'astro:content';
-import type { CollectionKey, CollectionEntry } from 'astro:content';
+import type { CollectionKey } from 'astro:content';
 
 const defaultLocale = themeConfig.i18n.defaultLocale;
+
+// Minimal structural shape of a content entry. Used to cast results from
+// getEntry/getCollection so that an empty content config (collections = {})
+// — which makes Astro infer `never` — does not break property access.
+interface ContentEntryLike {
+  id: string;
+  data: { draft?: boolean; i18nSlug?: Record<string, string>; [key: string]: unknown };
+}
+
+// Safe wrappers around getEntry/getCollection that tolerate a missing or empty
+// content config. When no collections are defined, the underlying calls either
+// throw at runtime or resolve to `never`-typed values; we catch and return null
+// / [] so callers can fall back gracefully.
+async function safeGetEntry(collection: CollectionKey, entryId: string): Promise<ContentEntryLike | null> {
+  try {
+    const entry = (await getEntry(collection, entryId)) as ContentEntryLike | null | undefined;
+    return entry ?? null;
+  } catch {
+    return null;
+  }
+}
+
+async function safeGetCollection(collection: CollectionKey, filter?: (entry: ContentEntryLike) => boolean): Promise<ContentEntryLike[]> {
+  try {
+    const entries = (await getCollection(collection, filter as never)) as ContentEntryLike[];
+    return Array.isArray(entries) ? entries : [];
+  } catch {
+    return [];
+  }
+}
 
 // Safe accessor for dynamic keys to avoid object-injection sinks
 function getProp(obj: unknown, key: string | number): unknown {
@@ -66,23 +96,13 @@ export function getCleanLocaleUrl(url: URL, currentLang?: keyof typeof translati
 
 // get path with locale, minding the dynamic nature of content
 export async function getLocaleUrlWithContent(entryId: string, collection: CollectionKey, targetLang: keyof typeof translations, absolute?: boolean, absoluteBasePath?: string) {
-  // get entry first
-  const baseEntry = await getEntry(collection, entryId);
+  if (!targetLang) targetLang = defaultLocale;
+  // get entry first (guarded: returns null when no collection exists)
+  const baseEntry = await safeGetEntry(collection, entryId);
   // if baseEntry includes i18nSlug, we use that, otherwise we use the entryId
   const i18nSlug = baseEntry && 'i18nSlug' in baseEntry.data ? baseEntry.data.i18nSlug : undefined;
   const targetId = (getProp(i18nSlug, targetLang) as string | undefined) ?? entryId;
-  if (!targetLang) targetLang = defaultLocale;
-  const contentEntries = [
-    ...new Set(
-      (
-        (await getCollection(collection, ({ data }) => {
-          return !data.draft;
-        })) as CollectionEntry<typeof collection>[]
-      )
-        .map((entry) => (entry.id === targetLang + '/' + targetId.split('/').pop() ? targetId.split('/').pop() : null))
-        .filter(Boolean),
-    ),
-  ];
+  const contentEntries = [...new Set((await safeGetCollection(collection, ({ data }) => !data.draft)).map((entry) => (entry.id === targetLang + '/' + targetId.split('/').pop() ? targetId.split('/').pop() : null)).filter(Boolean))];
   // fallback
   return getLocaleUrl((absoluteBasePath ? absoluteBasePath + '/' : '') + (contentEntries[0] ? contentEntries[0].split('/').pop() : targetId.split('/').pop()), targetLang, absolute);
 }
@@ -99,23 +119,10 @@ export function getLocaleUrl(slug: string, targetLang?: keyof typeof translation
 export async function checkTranslatedPath(currentLocale: keyof typeof translations, noi18n?: boolean, collection?: CollectionKey, entryId?: string) {
   const i18nSlug = await (async function () {
     if (!collection || !entryId) return null;
-    const baseEntry = await getEntry(collection, entryId);
+    const baseEntry = await safeGetEntry(collection, entryId);
     return baseEntry && 'i18nSlug' in baseEntry.data ? baseEntry.data.i18nSlug : null;
   })();
-  const contentEntries =
-    collection && entryId
-      ? [
-          ...new Set(
-            (
-              (await getCollection(collection, ({ data }) => {
-                return !data.draft;
-              })) as CollectionEntry<typeof collection>[]
-            )
-              .map((entry) => (entry.id.endsWith('/' + entryId.split('/').pop()) || getProp(i18nSlug, entry.id.split('/')[0]) ? entry.id.split('/')[0] : null))
-              .filter(Boolean),
-          ),
-        ]
-      : [];
+  const contentEntries = collection && entryId ? [...new Set((await safeGetCollection(collection, ({ data }) => !data.draft)).map((entry) => (entry.id.endsWith('/' + entryId.split('/').pop()) || getProp(i18nSlug, entry.id.split('/')[0]) ? entry.id.split('/')[0] : null)).filter(Boolean))] : [];
   // unfortunately, at the moment only works with content collections
   // TODO: when there is a stable way to identify whether the target page is 404, adjust the logic here
   return Object.fromEntries(

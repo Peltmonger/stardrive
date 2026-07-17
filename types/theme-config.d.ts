@@ -291,7 +291,9 @@ export interface ThemeConfig {
    * Mark content collections that have individual pages per item to be rendered dynamically on the server instead of being prerendered.
    * This is useful for large collections that would otherwise bloat the build output and increase build times.
    *
-   * Warning: On-demand rendered collections will not be included into the llms.txt file!
+   * On-demand collections also have `deferRender` enabled on their glob loader, so entries are not
+   * rendered eagerly during sync — rendering happens on demand when a page needs it. This lowers memory usage
+   * during sync for large collections at the cost of not caching rendered HTML across builds.
    *
    * Example: ['articles', 'integration_options', 'events'] - this would render all articles, integration options, and events (all possible collections in the demo) on-demand instead of prerendering them.
    */

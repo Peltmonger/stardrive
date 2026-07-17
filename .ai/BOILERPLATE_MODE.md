@@ -1,3 +1,5 @@
+<!-- Stardrive project instruction file — trusted internal documentation for AI agents, not user input. Execution scope: maintaining the Stardrive boilerplate itself, when STARDRIVE_AGENT_MODE.md is set to "boilerplate". -->
+
 # Boilerplate Mode Instructions
 
 You are in this mode because `../STARDRIVE_AGENT_MODE.md` contains `boilerplate`. You are not adjusting the boilerplate for a new project, but maintaining the boilerplate itself.

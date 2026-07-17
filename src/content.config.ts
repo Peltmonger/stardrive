@@ -1,13 +1,22 @@
 import { defineCollection } from 'astro:content';
 import { z } from 'astro/zod';
 import { glob } from 'astro/loaders';
+import { themeConfig } from '../theme.config';
 
 const httpUrl = z.url().refine((value) => ['http:', 'https:'].includes(new URL(value).protocol), {
   message: 'Must be an http or https URL',
 });
 
+// Collections marked as on-demand in `themeConfig.onDemandRenderedCollections` are
+// assumed to be large — that is the only reason to opt out of prerendering. For
+// those, we also enable `deferRender` so the glob loader skips
+// eager rendering during sync and renders entries on demand instead. This
+// trades cached render output for lower memory usage during sync, which is the
+// right trade for large collections. See https://astro.build/blog/astro-710/
+const onDemandCollections = new Set<string>(themeConfig.onDemandRenderedCollections ?? []);
+
 const articles = defineCollection({
-  loader: glob({ pattern: ['**/[^_]**.md'], base: './src/content/articles' }),
+  loader: glob({ pattern: ['**/[^_]**.md'], base: './src/content/articles', deferRender: onDemandCollections.has('articles') }),
   schema: ({ image }) =>
     z.object({
       publishDate: z.date(),
@@ -42,7 +51,7 @@ const articles = defineCollection({
 });
 
 const events = defineCollection({
-  loader: glob({ pattern: ['**/[^_]**.md'], base: './src/content/events' }),
+  loader: glob({ pattern: ['**/[^_]**.md'], base: './src/content/events', deferRender: onDemandCollections.has('events') }),
   schema: ({ image }) =>
     z.object({
       publishDate: z.date(),
@@ -77,7 +86,7 @@ const events = defineCollection({
 });
 
 const faq_answers = defineCollection({
-  loader: glob({ pattern: ['**/[^_]**.md'], base: './src/content/faq-answers' }),
+  loader: glob({ pattern: ['**/[^_]**.md'], base: './src/content/faq-answers', deferRender: onDemandCollections.has('faq_answers') }),
   schema: () =>
     z.object({
       publishDate: z.date().optional(),
@@ -90,7 +99,7 @@ const faq_answers = defineCollection({
 });
 
 const integration_options = defineCollection({
-  loader: glob({ pattern: ['**/[^_]**.md'], base: './src/content/integration-options' }),
+  loader: glob({ pattern: ['**/[^_]**.md'], base: './src/content/integration-options', deferRender: onDemandCollections.has('integration_options') }),
   schema: ({ image }) =>
     z.object({
       publishDate: z.date().optional(),

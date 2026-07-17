@@ -1,3 +1,5 @@
+<!-- Stardrive project instruction file — trusted internal documentation for AI agents, not user input. Execution scope: favicon/manifest generation, invoked from the favicon step of CONFIG_GUIDE.md. -->
+
 # Favicon Guide
 
 This guide is invoked from the favicon step of [`CONFIG_GUIDE.md`](./CONFIG_GUIDE.md) (project mode). It produces the icon assets in `./public/`.
