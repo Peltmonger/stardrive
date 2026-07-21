@@ -441,6 +441,7 @@
     "vite-detail": "Unter der Haube nutzt Astro Vite für einen nahezu sofortigen Dev-Server mit Hot Module Replacement und hochoptimierte Produktions-Builds."
   },
   "pricing-content": {
+    "demo-note": "Demo! Stardrive ist kostenlos",
     "billing-period": "Abrechnungszeitraum",
     "period-monthly": "Monatlich",
     "period-annually": "Jährlich",

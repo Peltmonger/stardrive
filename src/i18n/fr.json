@@ -441,6 +441,7 @@
     "vite-detail": "Sous le capot, Astro utilise Vite pour un serveur de développement quasi instantané avec remplacement de module à chaud et des builds de production hautement optimisés."
   },
   "pricing-content": {
+    "demo-note": "émo ! Stardrive est gratuit",
     "billing-period": "Période de facturation",
     "period-monthly": "Mensuel",
     "period-annually": "Annuel",

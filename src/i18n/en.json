@@ -441,6 +441,7 @@
     "vite-detail": "Under the hood, Astro uses Vite for a near-instant dev server with hot module replacement and highly optimized production builds."
   },
   "pricing-content": {
+    "demo-note": "Demo! Stardrive is free",
     "billing-period": "Billing period",
     "period-monthly": "Monthly",
     "period-annually": "Annually",

@@ -18,7 +18,10 @@ const t = useTranslations(locale);
 ---
 
 <Layout title={t('pages.pricing.title')} description={t('pages.pricing.description')} {locale}>
-  <Headline text={t('pages.pricing.title')} class="pb-6" />
+  <div class="flex flex-wrap gap-0 mb-10 lg:mb-0 flex-col lg:flex-row justify-between items-start">
+    <Headline text={t('pages.pricing.title')} class="pb-6" />
+    <div class="font-headline rounded-full bg-red-400/30 dark:bg-red-800/30 py-3 lg:mt-10 px-5 text-lg sm:text-2xl font-bold border-2 border-red-600 dark:border-red-400">{t('pricing-content.demo-note')}</div>
+  </div>
   <p class="mb-12 max-w-2xl text-lg text-stone-600 dark:text-stone-300">{t('pages.pricing.description')}</p>
   <PricingTable {locale} />
 </Layout>
