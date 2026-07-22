@@ -5,12 +5,12 @@
   "main": "@astrojs/cloudflare/entrypoints/server",
   "assets": {
     "directory": "./dist",
-    "not_found_handling": "404-page"
+    "not_found_handling": "404-page",
   },
   "workers_dev": false,
   "preview_urls": false,
   "observability": {
-    "enabled": false // Depending on your case, this can drive costs up. Activate with care on production!
+    "enabled": false, // Depending on your case, this can drive costs up. Activate with care on production!
   },
   // Note: With the Astro Cloudflare adapter, environments are selected at BUILD time.
   // The adapter generates a flat `dist/server/wrangler.json` and redirects deploy to it.
@@ -24,8 +24,8 @@
       "workers_dev": false,
       "preview_urls": false,
       "observability": {
-        "enabled": true
-      }
-    }
-  }
+        "enabled": true,
+      },
+    },
+  },
 }
